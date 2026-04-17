@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-// NEED TO ADD SECONDARY ABILITY:
-struct CustomButtonView<Content: View, Destination: View>: View {
+struct CustomPrimaryButton<Content: View, Destination: View>: View {
     // Regular Button
     var action: () -> Void
     
@@ -42,7 +41,7 @@ struct CustomButtonView<Content: View, Destination: View>: View {
 }
 
 #Preview {
-    CustomButtonView(
+    CustomPrimaryButton(
         action: {},
         destination: EmptyView(),
         isCanNavigate: false,

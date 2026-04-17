@@ -32,12 +32,12 @@ struct SettingsView: View {
                 
                 Spacer()
                 
-                CustomButtonView(
+                CustomPrimaryButton(
                     action: {
                         isUpdateMode = true
                     },
                     destination: EmptyView(),
-                    isCanNavigate: false
+                    isCanNavigate: false,
                 ) {
                     Image(systemName: "pencil.circle.fill")
                     Text("Update")
@@ -70,7 +70,7 @@ struct SettingsView: View {
                             HStack {
                                 Image(systemName: "book.closed")
                                 Text("Vocabulary per week")
-                                    .font(.subheadline)
+                                    .font(.headline)
                             }
                             
                             HStack {
@@ -89,7 +89,7 @@ struct SettingsView: View {
                             }
                         }
                         
-                        CustomButtonView(
+                        CustomPrimaryButton(
                             action: {
                                 viewModel.addUpdateUser(
                                     name: name,
@@ -99,7 +99,7 @@ struct SettingsView: View {
                                 isUpdateMode = false
                             },
                             destination: EmptyView(),
-                            isCanNavigate: false
+                            isCanNavigate: false,
                         ) {
                             Text("Save Changes")
                                 .font(.headline)
@@ -160,12 +160,12 @@ struct SettingsView: View {
                 .font(.headline)
                 .padding(.bottom, 16)
             
-            CustomButtonView(
+            CustomSecondaryButton(
                 action: {
                     isShowAlert = true
                 },
                 destination: EmptyView(),
-                isCanNavigate: false
+                isCanNavigate: false,
             ) {
                 HStack {
                     Text("Delete Account")
@@ -183,6 +183,7 @@ struct SettingsView: View {
                     hasOnboarded = false
                 }
             }
+            .tint(.black)
             
             Spacer()
         }

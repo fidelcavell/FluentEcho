@@ -17,6 +17,8 @@ struct TextFieldWithLabelView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label(labelTitle, systemImage: icon)
+                .font(.headline)
+            
             TextField(placeholder, text: $bindedData)
                 .padding()
                 .background(Color.gray.opacity(0.1))

@@ -49,7 +49,7 @@ struct VocabularyLearnView: View {
                             
                             Spacer()
                             
-                            CustomButtonView(
+                            CustomSecondaryButton(
                                 action: {
                                     selectedPractice = selectedPracticeData(
                                         index: index,
@@ -57,7 +57,7 @@ struct VocabularyLearnView: View {
                                     )
                                 },
                                 destination: EmptyView(),
-                                isCanNavigate: false
+                                isCanNavigate: false,
                             ) {
                                 HStack {
                                     Text("Learn")
@@ -80,7 +80,7 @@ struct VocabularyLearnView: View {
                 
                 HStack {
                     HStack(spacing: 6) {
-                        Image(systemName: "clock")
+                        Image(systemName: "clock.arrow.circlepath")
                             .font(.title2)
                         
                         Text("Learn History")
@@ -96,12 +96,12 @@ struct VocabularyLearnView: View {
                     
                     Spacer()
                     
-                    CustomButtonView(
+                    CustomSecondaryButton(
                         action: {},
                         destination: LearnHistoryView(
                             selectedVocabulary: selectedVocabulary
                         ),
-                        isCanNavigate: true
+                        isCanNavigate: true,
                     ) {
                         HStack {
                             Text("View All")
@@ -115,6 +115,7 @@ struct VocabularyLearnView: View {
             }
             .navigationTitle("Learning Vocabulary")
             .padding(.horizontal, 28)
+            .toolbar(.hidden, for: .tabBar)
         }
     }
 }

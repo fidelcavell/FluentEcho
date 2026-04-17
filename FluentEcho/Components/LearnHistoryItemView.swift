@@ -17,6 +17,7 @@ struct LearnHistoryItemView: View {
             HStack {
                 Text("17 April 2026 - [Technology]")
                     .font(.headline)
+                    .fontDesign(.rounded)
                 
                 Spacer()
             }
@@ -27,17 +28,16 @@ struct LearnHistoryItemView: View {
                 
                 Spacer()
                 
-                Button {
-                    // TODO -> Able to playback recorded practice audio
-                } label: {
-                    Circle()
-                        .frame(width: 42)
-                        .foregroundStyle(.green)
-                        .overlay {
-                            Image(systemName: isRecordPlaying ? "pause.circle" : "play.circle")
-                                .font(.headline)
-                                .foregroundStyle(.white)
-                        }
+                CustomPrimaryButton(
+                    action: {
+                        //
+                    },
+                    destination: EmptyView(),
+                    isCanNavigate: false
+                ) {
+                    Image(systemName: isRecordPlaying ? "pause.circle" : "play.circle")
+                        .font(.headline)
+                        .foregroundStyle(.white)
                 }
             }
             .padding(.trailing, 8)

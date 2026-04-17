@@ -26,12 +26,12 @@ struct VocabularyItemView: View {
                         .font(.title2)
                         .fontDesign(.rounded)
                     
-                    CustomButtonView(
+                    CustomPrimaryButton(
                         action: {
                             speaker.speak(targetedText: selectedVocabulary.word)
                         },
                         destination: EmptyView(),
-                        isCanNavigate: false
+                        isCanNavigate: false,
                     ) {
                         Image(systemName: "speaker.wave.2")
                             .font(.title2)
@@ -69,10 +69,8 @@ struct VocabularyItemView: View {
                     .buttonBorderShape(.roundedRectangle(radius: 16))
                     .padding(.top, 62)
                 }
-                
             }
         }
-        
     }
 }
 
