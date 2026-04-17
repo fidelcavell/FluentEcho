@@ -1,0 +1,17 @@
+# Xcode
+DerivedData/
+.build/
+
+# User settings
+xcuserdata/
+*.xcuserstate
+
+# Workspace settings
+*.xcworkspace
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+Packages/
+Package.resolved
