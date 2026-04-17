@@ -56,58 +56,6 @@ struct ContentView: View {
                 )
                 .zIndex(1)
             }
-            .toolbar {
-                ToolbarItemGroup(placement: .bottomBar) {
-                    // Left Side Button:
-                    CustomButtonView(
-                        action: {},
-                        destination: SettingsView(context: context),
-                        isCanNavigate: true
-                    ) {
-                        HStack {
-                            Image(systemName: "person")
-                            Text("Settings")
-                        }
-                    }
-                    
-                    if let index = currentIndex,
-                       viewModel.vocabularies.indices.contains(index) {
-                        
-                        CustomButtonView(
-                            action: {},
-                            destination: VocabularyLearnView(
-                                selectedVocabulary: viewModel.vocabularies[index]
-                            ),
-                            isCanNavigate: true
-                        ) {
-                            HStack {
-                                Image(systemName: "book.badge.plus")
-                                Text("Learn")
-                            }
-                            .padding(4)
-                        }
-                    }
-                    
-                    Spacer()
-                    
-                    // Right Side Button:
-                    CustomButtonView(
-                        action: {
-                            isSearching = true
-                        },
-                        destination: EmptyView(),
-                        isCanNavigate: false
-                    ) {
-                        Image(systemName: "magnifyingglass")
-                    }
-                    .sheet(isPresented: $isSearching) {
-                        VStack {
-                            Text("Hello, this is Search Sheet!")
-                        }
-                        .presentationDetents([.fraction(0.7)])
-                    }
-                }
-            }
         }
     }
 }

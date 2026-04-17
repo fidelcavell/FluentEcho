@@ -22,7 +22,7 @@ struct SplashView: View {
                 if !hasOnboarded {
                     OnboardingView()
                 } else {
-                    ContentView(context: context)
+                    TabBarView()
                 }
             } else {
                 Image("img_logo")

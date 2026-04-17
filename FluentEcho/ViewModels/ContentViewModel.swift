@@ -22,6 +22,9 @@ class ContentViewModel {
     var vocabularies: [Vocabulary] = []
     var isLoading: Bool = false
     
+    // Cache variable:
+    private var cachedVocabularies: [String: [Vocabulary]] = [:]
+    
     func fetchUser() {
         isLoading = true
         let descriptor = FetchDescriptor<User>()
@@ -39,6 +42,15 @@ class ContentViewModel {
     func fetchVocabularies(selectedTag: String) {
         isLoading = true
         
+        // Checking cache availability and use it instead of reshuffle again
+        if let cached = cachedVocabularies[selectedTag] {
+            print("USING CACHE for tag:", selectedTag)
+            vocabularies = cached
+            isLoading = false
+            return
+        }
+        
+        // Define fetch data condition
         let descriptor = FetchDescriptor<Vocabulary>(
             predicate: #Predicate { item in
                 item.tag == selectedTag
@@ -46,10 +58,16 @@ class ContentViewModel {
         )
         
         do {
+            // Fetch list of vocabulary with defined specific tag and shuffle it
             let results = try context.fetch(descriptor)
-            self.vocabularies = Array(results.shuffled().prefix(25))
+            let shuffled = Array(results.shuffled().prefix(25))
             
-            print("FETCH VOCABULARIES is performed: \(vocabularies.count) items")
+            vocabularies = shuffled
+            
+            // Store shuffled list result to temporary cache
+            cachedVocabularies[selectedTag] = shuffled
+            
+            print("FETCH VOCABULARIES is performed: \(shuffled.count) items")
             
         } catch {
             print("Failed to fetch vocabularies:", error)
