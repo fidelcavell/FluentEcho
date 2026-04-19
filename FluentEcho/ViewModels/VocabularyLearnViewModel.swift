@@ -31,17 +31,35 @@ class VocabularyLearnViewModel {
         recordedAudioURL != nil && !isRecording
     }
     
+    // Define the path where got used to store the recorded audio files (temporary storage)
+    // Note: Run well if kill in background and relaunch the application but audio files will disappear if trying to reinstall via xcode
+    func createNewRecordingURL() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd_HHmmss"
+        
+        let fileName = "\(formatter.string(from: Date()))-\(UUID().uuidString).m4a"
+        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        recordedAudioURL = documentsPath.appendingPathComponent(fileName)
+    }
+    
     func startRecording() {
         audioManager.requestMicrophonePermission { granted in
             DispatchQueue.main.async {
                 self.recordedAudioURL = nil
                 
                 if granted {
+                    self.createNewRecordingURL()
                     self.isRecording = true
-                    self.recordedAudioURL = self.audioManager.fileURL
-                    self.audioManager.startRecording(url: self.audioManager.fileURL)
-                    
                     self.isPermissionGranted = true
+                    
+                    guard let recordedURL = self.recordedAudioURL else { return }
+                    
+                    print("---------")
+                    print(recordedURL)
+                    print("---------")
+                    
+                    self.audioManager.startRecording(url: recordedURL)
+                    
                     print("Microphone permission granted! [VIEWMODEL]")
                     
                 } else {
@@ -68,9 +86,10 @@ class VocabularyLearnViewModel {
         let newRecordingPractice = LearnHistory(
             date: Date(),
             practiceSentenceIndex: targetedIndex,
-            recordedAudio: url.lastPathComponent,
+            recordedAudio: url.absoluteString,
             vocabulary: targetedVocabulary
         )
+        targetedVocabulary.learnHistory.append(newRecordingPractice)
         context.insert(newRecordingPractice)
         
         do {

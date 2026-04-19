@@ -8,34 +8,52 @@
 import SwiftUI
 
 struct LearnHistoryItemView: View {
-    //var selectedLearnHistory: LearnHistory
-    
-    @State private var isRecordPlaying: Bool = false
+    @StateObject private var audio = AudioManager()
+    var selectedLearnHistory: LearnHistory
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("17 April 2026 - [Technology]")
-                    .font(.headline)
-                    .fontDesign(.rounded)
+                Text(selectedLearnHistory.date.formatted(
+                    .dateTime
+                        .weekday(.wide)
+                        .day()
+                        .month(.wide)
+                        .year()
+                        .hour(.twoDigits(amPM: .omitted))
+                        .minute(.twoDigits)
+                        .second(.twoDigits)
+                ))
+                .font(.headline)
+                .fontDesign(.rounded)
                 
                 Spacer()
             }
             
             HStack(spacing: 8) {
-                Text("Our team uses Agile to deliver features in short sprints.")
-                    .font(.subheadline)
+                VStack(alignment: .leading) {
+                    Text("Practice sentence:")
+                        .font(.footnote)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.secondary)
+                    
+                    Text(selectedLearnHistory.vocabulary.practiceSentencesEN[selectedLearnHistory.practiceSentenceIndex])
+                        .font(.subheadline)
+                }
                 
                 Spacer()
                 
                 CustomPrimaryButton(
                     action: {
-                        //
+                        if let url = URL(string: selectedLearnHistory.recordedAudio) {
+                            audio.playback(url: url)
+                            print(url)
+                        }
                     },
                     destination: EmptyView(),
                     isCanNavigate: false
                 ) {
-                    Image(systemName: isRecordPlaying ? "pause.circle" : "play.circle")
+                    Image(systemName: "play.circle")
                         .font(.headline)
                         .foregroundStyle(.white)
                 }
@@ -44,8 +62,8 @@ struct LearnHistoryItemView: View {
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.white)
+            .ultraThinMaterial,
+            in: RoundedRectangle(cornerRadius: 16)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
@@ -58,5 +76,29 @@ struct LearnHistoryItemView: View {
 }
 
 #Preview {
-    LearnHistoryItemView()
+    LearnHistoryItemView(
+        selectedLearnHistory: LearnHistory(
+            date: Date(),
+            practiceSentenceIndex: 1,
+            recordedAudio: "",
+            vocabulary: Vocabulary(
+                word: "Agile",
+                tag: "Technology",
+                pronunciation: "a-jail",
+                meaningEN: "A flexible and iterative approach to project management",
+                meaningID: "Pendekatan yang fleksibel dan iteratif dalam manajemen proyek",
+                practiceSentencesEN: [
+                    "Our team uses Agile to deliver features in short sprints.",
+                    "Agile allows quick adaptation to changes.",
+                    "Daily standups are part of Agile.",
+                ],
+                practiceSentencesID: [
+                    "Tim kami menggunakan Agile untuk menyampaikan fitur dalam sprint singkat.",
+                    "Agile memungkinkan adaptasi cepat terhadap perubahan.",
+                    "Standup harian adalah bagian dari Agile."
+                ],
+                learnHistory: []
+            )
+        )
+    )
 }

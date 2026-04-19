@@ -13,12 +13,6 @@ class AudioManager: ObservableObject {
     var recorder: AVAudioRecorder?
     private var player: AVAudioPlayer?
     
-    // Define the path where got used to store the recorded audio files (temporary storage)
-    var fileURL: URL {
-        let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        return path.appendingPathComponent("temp.m4a")
-    }
-    
     func requestMicrophonePermission(completion: @escaping (Bool) -> Void) {
         AVAudioApplication.requestRecordPermission { granted in
             DispatchQueue.main.async {
@@ -34,7 +28,6 @@ class AudioManager: ObservableObject {
                 return
             }
         }
-        
         let session = AVAudioSession.sharedInstance()
         
         do {
@@ -63,8 +56,9 @@ class AudioManager: ObservableObject {
         do {
             player = try AVAudioPlayer(contentsOf: url)
             player?.play()
+            
         } catch {
-            print("Failed to play audio:", error)
+            print("Failed to playback audio:", error)
         }
     }
 }

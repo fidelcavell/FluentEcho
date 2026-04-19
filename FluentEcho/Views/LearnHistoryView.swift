@@ -11,26 +11,29 @@ struct LearnHistoryView: View {
     var selectedVocabulary: Vocabulary
     
     var body: some View {
-        ScrollView {
-            VStack {
-                if !selectedVocabulary.learnHistory.isEmpty {
-                    Text("EMPTY")
-                    
-                } else {
-//                    ForEach(selectedVocabulary.learnHistory.enumerated(), id: \.offset) { index, item in
-//                        LearnHistoryItemView()
-//                    }
-                    
-                                    ForEach(1...15, id: \.self) { _ in
-                                        LearnHistoryItemView()
-                                    }
+        Group {
+            if selectedVocabulary.learnHistory.isEmpty {
+                VStack {
+                    Text("Empty Learn History!")
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
+            } else {
+                ScrollView {
+                    VStack {
+                        ForEach(selectedVocabulary.learnHistory.reversed(), id: \.id) { item in
+                            LearnHistoryItemView(
+                                selectedLearnHistory: item
+                            )
+                        }
+                    }
+                    .padding(.top, 112)
+                    .padding(.bottom, 48)
+                }
+                .ignoresSafeArea(edges: .vertical)
             }
-            .padding(.top, 112)
-            .padding(.bottom, 48)
         }
-        .navigationTitle("Learn History")
-        .ignoresSafeArea(edges: .vertical)
+        .navigationTitle("Learning History")
     }
 }
 

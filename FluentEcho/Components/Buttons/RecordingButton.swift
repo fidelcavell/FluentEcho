@@ -11,6 +11,7 @@ import SwiftData
 struct RecordingButton: View {
     var viewModel: VocabularyLearnViewModel
     var dismissPracticeSheet: () -> Void
+    @Binding var showPermissionAlert: Bool
     
     var body: some View {
         VStack {
@@ -22,17 +23,15 @@ struct RecordingButton: View {
                         .foregroundStyle(.white)
                         .font(.title)
                 )
-                .scaleEffect(viewModel.isRecording ? 1.2 : 1.0)
+                .scaleEffect(viewModel.isRecording ? 1.3 : 1.0)
                 .gesture(
                     LongPressGesture(minimumDuration: 0.2)
                         .onEnded { _ in
                             // Hold the mic button -> Start Recording
-                            viewModel.startRecording()
-                            
-                            // Execute dismiss sheet when the permission is not granted
-                            if !viewModel.isPermissionGranted {
-                                dismissPracticeSheet()
+                            DispatchQueue.main.async {
+                                showPermissionAlert = false
                             }
+                            viewModel.startRecording()
                         }
                 )
                 .simultaneousGesture(
@@ -43,10 +42,12 @@ struct RecordingButton: View {
                                 viewModel.stopRecording()
                             }
                             
-                            
-                            // TODO - Need to deep evaluate more!
+                            // Execute "Dismiss practice sheet" when the permission is not granted
                             if !viewModel.isPermissionGranted {
                                 dismissPracticeSheet()
+                                DispatchQueue.main.async {
+                                    showPermissionAlert = true
+                                }
                             }
                         }
                 )
@@ -61,6 +62,7 @@ struct RecordingButton: View {
     
     RecordingButton(
         viewModel: VocabularyLearnViewModel(context: context),
-        dismissPracticeSheet: {}
+        dismissPracticeSheet: {},
+        showPermissionAlert: .constant(false)
     )
 }

@@ -79,24 +79,27 @@ struct VocabularyLearnView: View {
                     }
                 }
                 .sheet(item: $selectedPractice) { item in
-                    RecordingPracticeView(
+                    AudioPracticeView(
                         viewModel: viewModel,
                         selectedPractice: item,
                         dismissPracticeSheet: {
                             selectedPractice = nil
-                            DispatchQueue.main.async {
-                                showPermissionAlert = true
-                            }
-                        }
+                            viewModel.recordedAudioURL = nil
+                            
+                            // In case where user is not allow the microphone usage (alert reset purpose)
+                            showPermissionAlert = false
+                        },
+                        showPermissionAlert: $showPermissionAlert
                     )
-                    .presentationDetents([.fraction(0.6)])
+                    .interactiveDismissDisabled(true)
+                    .presentationDetents([viewModel.hasPreview ? .fraction(0.65) : .fraction(0.5)])
                 }
                 .alert(isPresented: $showPermissionAlert) {
                     Alert(
                         title: Text("Permission Denied"),
                         message: Text("Microphone access is required to record your voice. Please enable it in settings."),
                         dismissButton: .default(Text("Ok")) {
-                            //
+                            // Nothing
                         }
                     )
                 }
