@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct RecordingButton: View {
-    var viewModel: RecordingViewModel
+    var viewModel: VocabularyLearnViewModel
     var dismissPracticeSheet: () -> Void
     
     var body: some View {
@@ -60,7 +60,7 @@ struct RecordingButton: View {
     let context = container.mainContext
     
     RecordingButton(
-        viewModel: RecordingViewModel(context: context),
+        viewModel: VocabularyLearnViewModel(context: context),
         dismissPracticeSheet: {}
     )
 }

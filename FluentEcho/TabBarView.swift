@@ -17,8 +17,8 @@ struct TabBarView: View {
                 ContentView(context: context)
             }
             
-            Tab("Settings", systemImage: "person") {
-                SettingsView(context: context)
+            Tab("Profile", systemImage: "person") {
+                ProfileView(context: context)
             }
             
             Tab(role: .search) {

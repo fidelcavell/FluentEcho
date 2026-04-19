@@ -10,7 +10,7 @@ import Observation
 import SwiftData
 
 @Observable
-class SettingsViewModel {
+class ProfileViewModel {
     private let context: ModelContext
     
     init(context: ModelContext) {

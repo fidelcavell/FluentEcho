@@ -11,7 +11,7 @@ import SwiftData
 struct RecordingPracticeView: View {
     @StateObject private var speaker = SpeechManager()
     
-    var viewModel: RecordingViewModel
+    var viewModel: VocabularyLearnViewModel
     var selectedPractice: SelectedPracticeData
     var dismissPracticeSheet: () -> Void
     
@@ -113,7 +113,7 @@ struct RecordingPracticeView: View {
     let context = container.mainContext
     
     RecordingPracticeView(
-        viewModel: RecordingViewModel(context: context),
+        viewModel: VocabularyLearnViewModel(context: context),
         selectedPractice: SelectedPracticeData(
             index: 1,
             selectedVocabulary: Vocabulary(

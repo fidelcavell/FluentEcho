@@ -10,7 +10,7 @@ import Observation
 import SwiftData
 
 @Observable
-class RecordingViewModel {
+class VocabularyLearnViewModel {
     private var context: ModelContext
     private var audioManager = AudioManager()
     

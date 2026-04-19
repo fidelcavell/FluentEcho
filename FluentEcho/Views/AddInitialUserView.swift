@@ -8,10 +8,10 @@
 import SwiftUI
 import SwiftData
 
-struct AddInitialUserInfoView: View {
-    @State private var viewModel: SettingsViewModel
+struct AddInitialUserView: View {
+    @State private var viewModel: ProfileViewModel
     init(context: ModelContext) {
-        _viewModel = State(initialValue: SettingsViewModel(context: context))
+        _viewModel = State(initialValue: ProfileViewModel(context: context))
     }
     
     @AppStorage("hasOnboarded") var hasOnboarded: Bool?
@@ -97,5 +97,5 @@ struct AddInitialUserInfoView: View {
     let container = try! ModelContainer(for: User.self, configurations: config)
     let context = container.mainContext
     
-    AddInitialUserInfoView(context: context)
+    AddInitialUserView(context: context)
 }

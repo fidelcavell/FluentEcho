@@ -73,7 +73,7 @@ struct OnboardingView: View {
                 }
             }
             .navigationDestination(isPresented: $navigateToNext) {
-                AddInitialUserInfoView(context: context)
+                AddInitialUserView(context: context)
             }
         }
     }

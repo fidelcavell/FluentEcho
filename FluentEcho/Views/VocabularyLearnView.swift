@@ -16,12 +16,12 @@ struct SelectedPracticeData: Identifiable, Equatable {
 
 struct VocabularyLearnView: View {
     @Environment(\.modelContext) private var context: ModelContext
-    @State private var viewModel: RecordingViewModel
+    @State private var viewModel: VocabularyLearnViewModel
     
     var selectedVocabulary: Vocabulary
     
     init(context: ModelContext, selectedVocabulary: Vocabulary) {
-        _viewModel = State(initialValue: RecordingViewModel(context: context))
+        _viewModel = State(initialValue: VocabularyLearnViewModel(context: context))
         self.selectedVocabulary = selectedVocabulary
     }
     
