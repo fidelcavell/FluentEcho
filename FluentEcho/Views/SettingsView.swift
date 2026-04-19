@@ -26,7 +26,7 @@ struct SettingsView: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text("Settings")
+                Text("Profile")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 
@@ -110,9 +110,9 @@ struct SettingsView: View {
                     .padding(.horizontal, 28)
                     .presentationDetents([.fraction(0.75)])
                     .onAppear {
-                        name = viewModel.user.name
-                        interest = viewModel.user.interest
-                        vocabularyPerWeek = viewModel.user.vocabularyPerWeek
+                        name = viewModel.user?.name ?? "None"
+                        interest = viewModel.user?.interest ?? "None"
+                        vocabularyPerWeek = viewModel.user?.vocabularyPerWeek ?? 0
                     }
                 }
             }
@@ -125,7 +125,12 @@ struct SettingsView: View {
                     icon: "person",
                     placeholder: "",
                     isDisable: true,
-                    bindedData: $viewModel.user.name
+                    bindedData: Binding(
+                        get: { viewModel.user?.name ?? "No name" },  // Default value if user is nil
+                        set: { newValue in
+                            viewModel.user?.name = newValue
+                        }
+                    )
                 )
                 
                 TextFieldWithLabelView(
@@ -133,7 +138,12 @@ struct SettingsView: View {
                     icon: "target",
                     placeholder: "",
                     isDisable: true,
-                    bindedData: $viewModel.user.interest
+                    bindedData: Binding(
+                        get: { viewModel.user?.interest ?? "No interest" },  // Default value if user is nil
+                        set: { newValue in
+                            viewModel.user?.interest = newValue
+                        }
+                    )
                 )
                 
                 TextFieldWithLabelView(
@@ -142,11 +152,9 @@ struct SettingsView: View {
                     placeholder: "",
                     isDisable: true,
                     bindedData: Binding(
-                        get: {
-                            String(viewModel.user.vocabularyPerWeek)
-                        },
+                        get: { String(viewModel.user?.vocabularyPerWeek ?? 0) },  // Default value if user is nil
                         set: { newValue in
-                            viewModel.user.vocabularyPerWeek = Int(newValue) ?? 0
+                            viewModel.user?.vocabularyPerWeek = Int(newValue) ?? 0
                         }
                     )
                 )

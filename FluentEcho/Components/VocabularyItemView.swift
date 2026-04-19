@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct VocabularyItemView: View {
+    @Environment(\.modelContext) private var context: ModelContext
     @StateObject private var speaker = SpeechManager()
     
     var selectedVocabulary: Vocabulary
@@ -56,11 +58,12 @@ struct VocabularyItemView: View {
                 if !isSupportLeading {
                     NavigationLink {
                         VocabularyLearnView(
+                            context: context,
                             selectedVocabulary: selectedVocabulary
                         )
                     } label: {
                         HStack {
-                            Image(systemName: "graduationcap") // better for vocab
+                            Image(systemName: "graduationcap")
                             Text("Learn")
                         }
                         .padding(8)

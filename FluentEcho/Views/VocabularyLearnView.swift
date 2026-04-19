@@ -6,18 +6,28 @@
 //
 
 import SwiftUI
+import SwiftData
 
-struct selectedPracticeData: Identifiable {
+struct SelectedPracticeData: Identifiable, Equatable {
     let id = UUID()
     let index: Int
     let selectedVocabulary: Vocabulary
 }
 
 struct VocabularyLearnView: View {
+    @Environment(\.modelContext) private var context: ModelContext
+    @State private var viewModel: RecordingViewModel
+    
     var selectedVocabulary: Vocabulary
     
+    init(context: ModelContext, selectedVocabulary: Vocabulary) {
+        _viewModel = State(initialValue: RecordingViewModel(context: context))
+        self.selectedVocabulary = selectedVocabulary
+    }
+    
     @StateObject private var speaker = SpeechManager()
-    @State private var selectedPractice: selectedPracticeData?
+    @State private var selectedPractice: SelectedPracticeData?
+    @State private var showPermissionAlert: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -51,7 +61,7 @@ struct VocabularyLearnView: View {
                             
                             CustomSecondaryButton(
                                 action: {
-                                    selectedPractice = selectedPracticeData(
+                                    selectedPractice = SelectedPracticeData(
                                         index: index,
                                         selectedVocabulary: selectedVocabulary
                                     )
@@ -70,9 +80,25 @@ struct VocabularyLearnView: View {
                 }
                 .sheet(item: $selectedPractice) { item in
                     RecordingPracticeView(
-                        selectedPractice: item
+                        viewModel: viewModel,
+                        selectedPractice: item,
+                        dismissPracticeSheet: {
+                            selectedPractice = nil
+                            DispatchQueue.main.async {
+                                showPermissionAlert = true
+                            }
+                        }
                     )
-                    .presentationDetents([.fraction(0.4)])
+                    .presentationDetents([.fraction(0.6)])
+                }
+                .alert(isPresented: $showPermissionAlert) {
+                    Alert(
+                        title: Text("Permission Denied"),
+                        message: Text("Microphone access is required to record your voice. Please enable it in settings."),
+                        dismissButton: .default(Text("Ok")) {
+                            //
+                        }
+                    )
                 }
                 
                 Divider()
@@ -121,7 +147,12 @@ struct VocabularyLearnView: View {
 }
 
 #Preview {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: User.self, configurations: config)
+    let context = container.mainContext
+    
     VocabularyLearnView(
+        context: context,
         selectedVocabulary: Vocabulary(
             word: "Agile",
             tag: "Technology",

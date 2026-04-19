@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct RecordingPracticeView: View {
     @StateObject private var speaker = SpeechManager()
     
-    var selectedPractice: selectedPracticeData
+    var viewModel: RecordingViewModel
+    var selectedPractice: SelectedPracticeData
+    var dismissPracticeSheet: () -> Void
     
     var body: some View {
         VStack(spacing: 24) {
@@ -38,28 +41,66 @@ struct RecordingPracticeView: View {
                     speaker.speak(targetedText: selectedPractice.selectedVocabulary.practiceSentencesEN[selectedPractice.index])
                 } label: {
                     Circle()
-                        .frame(width: 42)
+                        .frame(width: 52)
                         .foregroundStyle(.green)
                         .overlay {
                             Image(systemName: "speaker.wave.2")
-                                .font(.headline)
+                                .font(.title2)
                                 .foregroundStyle(.white)
                         }
                 }
             }
             
-            Button {
-                print("Record button tapped!")
-            } label: {
-                Circle()
-                    .frame(width: 62)
-                    .tint(.green)
-                    .overlay {
-                        Image(systemName: "microphone")
-                            .font(.title2)
-                            .foregroundStyle(.white)
+            if viewModel.hasPreview {
+                VStack(spacing: 12) {
+                    Text("Your Recording is Ready")
+                        .font(.headline)
+                    
+                    HStack(spacing: 16) {
+                        Button {
+                            viewModel.playRecording()
+                        } label: {
+                            Image(systemName: "play.circle.fill")
+                                .font(.largeTitle)
+                                .foregroundStyle(.blue)
+                        }
+                        
+                        Button {
+                            viewModel.saveRecordingPractice(
+                                targetedIndex: selectedPractice.index,
+                                targetedVocabulary: selectedPractice.selectedVocabulary
+                            )
+                            viewModel.recordedAudioURL = nil // reset after save
+                            
+                        } label: {
+                            Text("Save")
+                                .padding()
+                                .background(.green)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                        
+                        Button {
+                            if let url = viewModel.recordedAudioURL {
+                                try? FileManager.default.removeItem(at: url)
+                            }
+                            viewModel.recordedAudioURL = nil
+                            
+                        } label: {
+                            Text("Delete")
+                                .padding()
+                                .background(.red)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
                     }
+                }
             }
+            
+            RecordingButton(
+                viewModel: viewModel,
+                dismissPracticeSheet: dismissPracticeSheet
+            )
             .padding(.top, 36)
         }
         .padding(.horizontal, 28)
@@ -67,8 +108,13 @@ struct RecordingPracticeView: View {
 }
 
 #Preview {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: LearnHistory.self, configurations: config)
+    let context = container.mainContext
+    
     RecordingPracticeView(
-        selectedPractice: selectedPracticeData(
+        viewModel: RecordingViewModel(context: context),
+        selectedPractice: SelectedPracticeData(
             index: 1,
             selectedVocabulary: Vocabulary(
                 word: "Agile",
@@ -88,6 +134,7 @@ struct RecordingPracticeView: View {
                 ],
                 learnHistory: []
             )
-        )
+        ),
+        dismissPracticeSheet: {}
     )
 }

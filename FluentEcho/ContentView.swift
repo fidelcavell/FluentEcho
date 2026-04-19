@@ -22,28 +22,23 @@ struct ContentView: View {
         NavigationStack {
             ZStack(alignment: .top) {
                 ScrollView(.vertical) {
-                    VStack {
-                        if viewModel.isLoading {
-                            ProgressView()
-                                .containerRelativeFrame(.vertical)
-                        }
-                        
+                    VStack(spacing: 0) {
                         ForEach(viewModel.vocabularies.enumerated(), id: \.offset) { index, item in
                             VocabularyItemView(
                                 selectedVocabulary: item,
                                 isSupportLeading: false
                             )
-                            .padding(.horizontal, 16)
+                            .padding(.horizontal, 28)
                             .containerRelativeFrame(.vertical)
                             .id(index)
                         }
                     }
                 }
                 .task {
-                    viewModel.fetchVocabularies(selectedTag: viewModel.user.interest)
+                    viewModel.fetchVocabularies(selectedTag: viewModel.user!.interest)
                 }
-                .onChange(of: viewModel.user.interest) {
-                    viewModel.fetchVocabularies(selectedTag: viewModel.user.interest)
+                .onChange(of: viewModel.user!.interest) {
+                    viewModel.fetchVocabularies(selectedTag: viewModel.user!.interest)
                 }
                 .scrollTargetLayout()
                 .scrollTargetBehavior(.paging)
@@ -52,9 +47,11 @@ struct ContentView: View {
                 
                 WeeklyProgressionView(
                     currentLearnedPerWeek: 1,
-                    totalLearnedPerWeek: Float(viewModel.user.vocabularyPerWeek)
+                    totalLearnedPerWeek: Float(viewModel.user!.vocabularyPerWeek)
                 )
                 .zIndex(1)
+                
+                // Add identifier to let user know that the vocabulary is focusing in a specific field (?)
             }
         }
     }

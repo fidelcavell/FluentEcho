@@ -18,15 +18,16 @@ class SettingsViewModel {
         fetchUser()
     }
     
-    var user: User = User(name: "None", interest: "None", vocabularyPerWeek: 1)
+    var user: User?
     var isLoading: Bool = false
     
     func fetchUser() {
         isLoading = true
         let descriptor = FetchDescriptor<User>()
+        
         do {
-            self.user = try context.fetch(descriptor).first
-            ?? User(name: "None", interest: "None", vocabularyPerWeek: 1)
+            let fetchedUser = try context.fetch(descriptor)
+            self.user = fetchedUser.first
             print("FETCH USER is performed!")
             
         } catch {
@@ -38,9 +39,20 @@ class SettingsViewModel {
     func addUpdateUser(name: String, interest: String, vocabularyPerWeek: Int) {
         isLoading = true
         
-        user.name = name
-        user.interest = interest
-        user.vocabularyPerWeek = vocabularyPerWeek
+        if let existingUser = user {
+            existingUser.name = name
+            existingUser.interest = interest
+            existingUser.vocabularyPerWeek = vocabularyPerWeek
+            
+        } else {
+            let newUser = User(name: name, interest: interest, vocabularyPerWeek: vocabularyPerWeek)
+            context.insert(newUser)
+            user = newUser
+        }
+        
+//        user.name = name
+//        user.interest = interest
+//        user.vocabularyPerWeek = vocabularyPerWeek
         
         do {
             try context.save()
@@ -55,9 +67,14 @@ class SettingsViewModel {
     func deleteUser() {
         isLoading = true
         
-        user.name = "None"
-        user.interest = "None"
-        user.vocabularyPerWeek = 1
+        if let user {
+            context.delete(user)
+            self.user = nil
+        }
+        
+//        user.name = "None"
+//        user.interest = "None"
+//        user.vocabularyPerWeek = 1
         
         do {
             try context.save()

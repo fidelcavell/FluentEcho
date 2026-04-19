@@ -18,7 +18,7 @@ class ContentViewModel {
         fetchUser()
     }
     
-    var user: User = User(name: "None", interest: "None", vocabularyPerWeek: 1)
+    var user: User?
     var vocabularies: [Vocabulary] = []
     var isLoading: Bool = false
     
@@ -28,9 +28,10 @@ class ContentViewModel {
     func fetchUser() {
         isLoading = true
         let descriptor = FetchDescriptor<User>()
+        
         do {
-            self.user = try context.fetch(descriptor).first
-            ?? User(name: "None", interest: "None", vocabularyPerWeek: 1)
+            let fetchedUser = try context.fetch(descriptor)
+            self.user = fetchedUser.first
             print("FETCH USER is performed!")
             
         } catch {
