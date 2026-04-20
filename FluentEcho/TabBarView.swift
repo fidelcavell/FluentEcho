@@ -21,8 +21,8 @@ struct TabBarView: View {
                 ProfileView(context: context)
             }
             
-            Tab(role: .search) {
-                // DEVELOP - SOON
+            Tab("Explore", systemImage: "magnifyingglass") {
+                SearchView(context: context)
             }
         }
         .tint(.green)
