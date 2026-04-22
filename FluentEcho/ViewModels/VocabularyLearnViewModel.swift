@@ -31,6 +31,25 @@ class VocabularyLearnViewModel {
         recordedAudioURL != nil && !isRecording
     }
     
+    func updateLearnedStatus(byId id: UUID) {
+        let descriptor = FetchDescriptor<Vocabulary>(
+            predicate: #Predicate {
+                $0.id == id
+            }
+        )
+        
+        do {
+            guard let selectedVocabulary = try context.fetch(descriptor).first else {
+                return
+            }
+            selectedVocabulary.isLearned = !selectedVocabulary.isLearned
+            try context.save()
+            
+        } catch {
+            print("Failed to update Vocabulary learning status: ", error)
+        }
+    }
+    
     // Define the path where got used to store the recorded audio files (temporary storage)
     // Note: Run well if kill in background and relaunch the application but audio files will disappear if trying to reinstall via xcode
     func createNewRecordingURL() {

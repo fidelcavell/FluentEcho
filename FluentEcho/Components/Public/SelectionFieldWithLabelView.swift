@@ -22,22 +22,23 @@ struct SelectionFieldWithLabelView: View {
             
             ForEach(selectionOptions, id: \.self) { option in
                 HStack {
-                    Image(systemName: bindedData == option ? "largecircle.fill.circle" : "circle")
-                        .foregroundColor(.green)
+                    Image(systemName: bindedData == option ? "checkmark.circle.fill" : "circle")
+                        .foregroundColor(bindedData == option ? .white : .green)
                     
                     Text(option)
+                        .foregroundColor(bindedData == option ? .white : .primary)
                     
                     Spacer()
                 }
+                .padding()
+                .background(bindedData == option ? .green : .gray.opacity(0.1))
+                .cornerRadius(16)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    withAnimation {
+                    withAnimation(.easeInOut) {
                         bindedData = option
                     }
                 }
-                .padding()
-                .background(Color.gray.opacity(0.08))
-                .cornerRadius(12)
             }
         }
     }

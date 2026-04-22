@@ -10,6 +10,7 @@ import SwiftData
 
 struct AddInitialUserView: View {
     @State private var viewModel: ProfileViewModel
+    
     init(context: ModelContext) {
         _viewModel = State(initialValue: ProfileViewModel(context: context))
     }
@@ -26,7 +27,7 @@ struct AddInitialUserView: View {
                 .font(.title.bold())
                 .padding(.top, 24)
             
-            // Name:
+            // Name
             TextFieldWithLabelView(
                 labelTitle: "Name",
                 icon: "person",
@@ -35,38 +36,29 @@ struct AddInitialUserView: View {
                 bindedData: $name
             )
             
-            // Interest:
+            // Interest
             SelectionFieldWithLabelView(
                 labelTitle: "Interest",
                 icon: "target",
                 bindedData: $interest
             )
             
-            // Vocabulary per week:
+            // Vocabulary per week
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
                     Image(systemName: "book.closed")
                     Text("Vocabulary per week")
-                        .font(.subheadline)
                 }
+                .font(.subheadline)
+                .fontWeight(.semibold)
                 
-                HStack {
-                    Stepper("", value: $vocabularyPerWeek, in: 1...10)
-                        .labelsHidden()
-                    
-                    Spacer()
-                    
-                    Text("\(vocabularyPerWeek)")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .frame(width: 40)
-                        .padding(.vertical, 6)
-                        .background(Color.gray.opacity(0.15))
-                        .cornerRadius(12)
-                }
+                NumberStepperView(
+                    value: $vocabularyPerWeek,
+                    range: 1...10
+                )
             }
             
-            // Set Up Button:
+            // Button
             Button(action: {
                 viewModel.addUpdateUser(
                     name: name,
@@ -74,7 +66,6 @@ struct AddInitialUserView: View {
                     vocabularyPerWeek: vocabularyPerWeek
                 )
                 hasOnboarded = true
-                
             }) {
                 Text("Set Up")
                     .font(.headline)

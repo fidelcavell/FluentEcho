@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-struct SearchView: View {
+struct ExploreView: View {
     @State private var viewModel: ContentViewModel
     
     init(context: ModelContext) {
@@ -61,8 +61,7 @@ struct SearchView: View {
                     viewModel.fetchVocabularies(selectedTag: interest)
                 }
             }
-            .navigationTitle("Explore Vocabulary")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Explore")
             .searchable(text: $searchText, prompt: "Search vocabulary...")
         }
     }
@@ -73,5 +72,5 @@ struct SearchView: View {
     let container = try! ModelContainer(for: User.self, configurations: config)
     let context = container.mainContext
     
-    SearchView(context: context)
+    ExploreView(context: context)
 }

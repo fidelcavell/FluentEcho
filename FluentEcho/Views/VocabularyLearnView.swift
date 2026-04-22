@@ -25,29 +25,32 @@ struct VocabularyLearnView: View {
         self.selectedVocabulary = selectedVocabulary
     }
     
-    @StateObject private var speaker = SpeechManager()
-    @State private var selectedPractice: SelectedPracticeData?
-    @State private var showPermissionAlert: Bool = false
-    
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                VocabularyItemView(
+                VocabularyInformationCardView(
                     selectedVocabulary: selectedVocabulary,
-                    isSupportLeading: true
+                    updateLearnedStatusAction: {
+                        viewModel.updateLearnedStatus(byId: selectedVocabulary.id)
+                    }
                 )
                 
                 Divider()
-                    .padding(.vertical, 18)
+                    .padding(.vertical, 8)
                 
                 HStack {
                     Image(systemName: "book.badge.plus")
-                        .font(.title2)
                     
-                    Text("Practices")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                    VStack(alignment: .leading) {
+                        Text("Practice Sentences")
+                            .fontWeight(.bold)
+                        
+                        Text("Select a sentence below to practice your speaking")
+                            .font(.caption)
+                    }
                 }
+                .font(.title3)
+                .foregroundStyle(.secondary)
                 
                 VStack(spacing: 24) {
                     ForEach(selectedVocabulary.practiceSentencesEN.enumerated(), id: \.offset) { index, item in
@@ -56,93 +59,91 @@ struct VocabularyLearnView: View {
                                 Text("\(index + 1).")
                                 Text(item)
                             }
+                            .font(.callout)
+                            .fontWeight(.semibold)
+                            .fontDesign(.rounded)
                             
                             Spacer()
                             
-                            CustomSecondaryButton(
+                            CustomPrimaryButton(
                                 action: {
-                                    selectedPractice = SelectedPracticeData(
+                                    viewModel.recordedAudioURL = nil
+                                },
+                                destination: RecordingPracticeView(
+                                    context: context,
+                                    selectedPractice: SelectedPracticeData(
                                         index: index,
                                         selectedVocabulary: selectedVocabulary
-                                    )
-                                },
-                                destination: EmptyView(),
-                                isCanNavigate: false,
+                                    ),
+                                ),
+                                isCanNavigate: true,
                             ) {
                                 HStack {
-                                    Text("Learn")
-                                    Image(systemName: "chevron.right.circle.fill")
+                                    Image(systemName: "microphone")
+                                    
+                                    Text("Speak Now")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
                                 }
                                 .padding(2)
                             }
                         }
+                        
                     }
-                }
-                .sheet(item: $selectedPractice) { item in
-                    AudioPracticeView(
-                        viewModel: viewModel,
-                        selectedPractice: item,
-                        dismissPracticeSheet: {
-                            selectedPractice = nil
-                            viewModel.recordedAudioURL = nil
-                            
-                            // In case where user is not allow the microphone usage (alert reset purpose)
-                            showPermissionAlert = false
-                        },
-                        showPermissionAlert: $showPermissionAlert
-                    )
-                    .interactiveDismissDisabled(true)
-                    .presentationDetents([viewModel.hasPreview ? .fraction(0.65) : .fraction(0.5)])
-                }
-                .alert(isPresented: $showPermissionAlert) {
-                    Alert(
-                        title: Text("Permission Denied"),
-                        message: Text("Microphone access is required to record your voice. Please enable it in settings."),
-                        dismissButton: .default(Text("Ok")) {
-                            // Nothing
-                        }
-                    )
                 }
                 
                 Divider()
-                    .padding(.vertical, 18)
+                    .padding(.vertical, 8)
                 
-                HStack {
-                    HStack(spacing: 6) {
-                        Image(systemName: "clock.arrow.circlepath")
-                            .font(.title2)
+                VStack {
+                    HStack {
+                        HStack(spacing: 6) {
+                            Image(systemName: "clock.arrow.circlepath")
+                            
+                            Text("Learning History")
+                                .fontWeight(.bold)
+                            
+                            Text("\(selectedVocabulary.learnHistory.count)")
+                                .font(.caption)
+                                .foregroundColor(.white)
+                                .padding(4)
+                                .background(Color.red)
+                                .clipShape(Circle())
+                        }
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
                         
-                        Text("Learn History")
-                            .font(.title2.bold())
+                        Spacer()
                         
-                        Text("\(selectedVocabulary.learnHistory.count)")
-                            .font(.caption)
-                            .foregroundColor(.white)
-                            .padding(4)
-                            .background(Color.red)
-                            .clipShape(Circle())
+                        CustomSecondaryButton(
+                            action: {},
+                            destination: LearningHistoryView(
+                                selectedVocabulary: selectedVocabulary
+                            ),
+                            isCanNavigate: true,
+                        ) {
+                            HStack {
+                                Text("View All")
+                                Image(systemName: "chevron.right.circle.fill")
+                            }
+                            .padding(2)
+                        }
                     }
                     
-                    Spacer()
-                    
-                    CustomSecondaryButton(
-                        action: {},
-                        destination: LearnHistoryView(
-                            selectedVocabulary: selectedVocabulary
-                        ),
-                        isCanNavigate: true,
-                    ) {
-                        HStack {
-                            Text("View All")
-                            Image(systemName: "chevron.right.circle.fill")
+                    ScrollView {
+                        VStack {
+                            ForEach(selectedVocabulary.learnHistory.reversed().prefix(5), id: \.id) { item in
+                                LearnHistoryItemView(selectedLearnHistory: item)
+                            }
                         }
-                        .padding(2)
                     }
                 }
                 
                 Spacer()
             }
+            .ignoresSafeArea(edges: .bottom)
             .navigationTitle("Learning Vocabulary")
+            .navigationBarTitleDisplayMode(.inline)
             .padding(.horizontal, 28)
             .toolbar(.hidden, for: .tabBar)
         }
@@ -153,6 +154,30 @@ struct VocabularyLearnView: View {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: User.self, configurations: config)
     let context = container.mainContext
+    
+    let dummyHistory = LearnHistory(
+        date: Date(),
+        practiceSentenceIndex: 1,
+        recordedAudio: "",
+        vocabulary: Vocabulary(
+            word: "Agile",
+            tag: "Technology",
+            pronunciation: "a-jail",
+            meaningEN: "A flexible and iterative approach to project management",
+            meaningID: "Pendekatan yang fleksibel dan iteratif dalam manajemen proyek",
+            practiceSentencesEN: [
+                "Our team uses Agile to deliver features in short sprints.",
+                "Agile allows quick adaptation to changes.",
+                "Daily standups are part of Agile.",
+            ],
+            practiceSentencesID: [
+                "Tim kami menggunakan Agile untuk menyampaikan fitur dalam sprint singkat.",
+                "Agile memungkinkan adaptasi cepat terhadap perubahan.",
+                "Standup harian adalah bagian dari Agile."
+            ],
+            learnHistory: []
+        )
+    )
     
     VocabularyLearnView(
         context: context,
@@ -172,7 +197,9 @@ struct VocabularyLearnView: View {
                 "Agile memungkinkan adaptasi cepat terhadap perubahan.",
                 "Standup harian adalah bagian dari Agile."
             ],
-            learnHistory: []
+            learnHistory: [
+                dummyHistory, dummyHistory
+            ]
         )
     )
 }

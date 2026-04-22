@@ -7,14 +7,30 @@
 
 import SwiftUI
 
-struct LearnHistoryView: View {
+struct LearningHistoryView: View {
     var selectedVocabulary: Vocabulary
     
     var body: some View {
         Group {
             if selectedVocabulary.learnHistory.isEmpty {
-                VStack {
-                    Text("Empty Learn History!")
+                VStack(spacing: 16) {
+                    Image(systemName: "book.closed")
+                        .font(.largeTitle)
+                        .foregroundStyle(.green.opacity(0.8))
+                        .padding()
+                        .background(.green.opacity(0.1))
+                        .clipShape(Circle())
+                    
+                    VStack(spacing: 8) {
+                        Text("No Learning History Yet")
+                            .font(.headline)
+                        
+                        Text("Start learning new vocabulary and your progress will appear here.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 38)
+                    }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 
@@ -38,7 +54,7 @@ struct LearnHistoryView: View {
 }
 
 #Preview {
-    LearnHistoryView(
+    LearningHistoryView(
         selectedVocabulary: Vocabulary(
             word: "Agile",
             tag: "Technology",

@@ -1,34 +1,53 @@
 //
-//  VocabularyItemView.swift
+//  VocabularyInformationCardView.swift
 //  FluentEcho
 //
-//  Created by Fidel Fausta Cavell on 13/04/26.
+//  Created by Fidel Fausta Cavell on 20/04/26.
 //
 
 import SwiftUI
 import SwiftData
 
-struct VocabularyItemView: View {
-    @Environment(\.modelContext) private var context: ModelContext
+struct VocabularyInformationCardView: View {
     @StateObject private var speaker = SpeechManager()
     
     var selectedVocabulary: Vocabulary
-    var isSupportLeading: Bool
+    var updateLearnedStatusAction: () -> Void
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: isSupportLeading ? .leading : .center, spacing: 16) {
-                Text(selectedVocabulary.word)
-                    .font(.largeTitle)
-                    .fontDesign(.rounded)
-                    .fontWeight(.bold)
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Text(selectedVocabulary.word)
+                        .font(.title)
+                        .fontDesign(.rounded)
+                        .fontWeight(.bold)
+                    
+                    Spacer()
+                    
+                    CustomSecondaryButton(
+                        action: {
+                            updateLearnedStatusAction()
+                        },
+                        destination: EmptyView(),
+                        isCanNavigate: false
+                    ) {
+                        HStack {
+                            Image(systemName: selectedVocabulary.isLearned ? "checkmark.circle" : "xmark.circle")
+                            Text(selectedVocabulary.isLearned ? "Completed" : "Incomplete")
+                                .fontWeight(.semibold)
+                        }
+                        .font(.caption)
+                        .foregroundStyle(selectedVocabulary.isLearned ? .green : .red)
+                    }
+                }
                 
                 HStack(spacing: 12) {
                     Text(selectedVocabulary.pronunciation)
-                        .font(.title2)
+                        .font(.title3)
                         .fontDesign(.rounded)
                     
-                    CustomPrimaryButton(
+                    CustomSecondaryButton(
                         action: {
                             speaker.speak(targetedText: selectedVocabulary.word)
                         },
@@ -38,12 +57,11 @@ struct VocabularyItemView: View {
                         Image(systemName: "speaker.wave.2")
                             .font(.title2)
                             .fontWeight(.bold)
-                            .foregroundStyle(.white)
                             .padding(2)
                     }
                 }
                 
-                VStack(alignment: isSupportLeading ? .leading : .center, spacing: 16) {
+                VStack(alignment: .leading ,spacing: 16) {
                     Text(selectedVocabulary.meaningEN)
                         .font(.headline)
                     
@@ -51,34 +69,22 @@ struct VocabularyItemView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
-                .multilineTextAlignment(isSupportLeading ? .leading : .center)
-                .padding(.top, 24)
-                
-                // Appear only when this component got used in ContentView
-                if !isSupportLeading {
-                    NavigationLink {
-                        VocabularyLearnView(
-                            context: context,
-                            selectedVocabulary: selectedVocabulary
-                        )
-                    } label: {
-                        HStack {
-                            Image(systemName: "graduationcap")
-                            Text("Learn")
-                        }
-                        .padding(8)
-                    }
-                    .buttonStyle(.glass)
-                    .buttonBorderShape(.roundedRectangle(radius: 16))
-                    .padding(.top, 62)
-                }
+                .multilineTextAlignment(.leading)
+                .padding(.top, 12)
             }
+            .padding(18)
+            .frame(maxWidth: .infinity)
+            .background(
+                .ultraThinMaterial,
+                in: RoundedRectangle(cornerRadius: 16)
+            )
+            .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 2)
         }
     }
 }
 
 #Preview {
-    VocabularyItemView(
+    VocabularyInformationCardView(
         selectedVocabulary: Vocabulary(
             word: "Agile",
             tag: "Technology",
@@ -97,6 +103,6 @@ struct VocabularyItemView: View {
             ],
             learnHistory: []
         ),
-        isSupportLeading: false
+        updateLearnedStatusAction: {}
     )
 }

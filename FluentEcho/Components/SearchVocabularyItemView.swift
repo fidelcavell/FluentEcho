@@ -12,9 +12,6 @@ struct SearchVocabularyItemView: View {
     @Environment(\.modelContext) private var context: ModelContext
     var selectedVocabulary: Vocabulary
     
-    // Will replace soon -> need to be more dynamic
-    private let isLearned: Bool = false
-    
     var body: some View {
         CustomSecondaryButton(
             action: {},
@@ -24,7 +21,6 @@ struct SearchVocabularyItemView: View {
             ),
             isCanNavigate: true
         ) {
-            
             HStack {
                 Text(selectedVocabulary.word)
                     .font(.headline)
@@ -32,14 +28,18 @@ struct SearchVocabularyItemView: View {
                 
                 Spacer()
                 
-                Text(isLearned ? "Learned" : "Not Learned")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(isLearned ? Color.green : Color.red)
-                    .clipShape(Capsule())
+                HStack {
+                    Image(systemName: selectedVocabulary.isLearned ? "checkmark.circle" : "xmark.circle")
+                    Text(selectedVocabulary.isLearned ? "Completed" : "Incomplete")
+                        .fontWeight(.semibold)
+                }
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(selectedVocabulary.isLearned ? Color.green : Color.red)
+                .clipShape(Capsule())
             }
         }
     }

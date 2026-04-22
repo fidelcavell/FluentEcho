@@ -13,16 +13,16 @@ struct TabBarView: View {
     
     var body: some View {
         TabView {
-            Tab("Vocabulary", systemImage: "character.book.closed") {
-                ContentView(context: context)
+            Tab("Mission", systemImage: "target") {
+                MissionView(context: context)
+            }
+            
+            Tab("Explore", systemImage: "magnifyingglass") {
+                ExploreView(context: context)
             }
             
             Tab("Profile", systemImage: "person") {
                 ProfileView(context: context)
-            }
-            
-            Tab("Explore", systemImage: "magnifyingglass") {
-                SearchView(context: context)
             }
         }
         .tint(.green)

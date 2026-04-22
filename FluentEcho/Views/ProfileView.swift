@@ -21,13 +21,23 @@ struct ProfileView: View {
     // Editing variable State
     @State private var name: String = ""
     @State private var interest: String = ""
-    @State private var vocabularyPerWeek: Int = 1
+    @State private var vocabularyPerWeek: Int = 0
     
     var body: some View {
         VStack(alignment: .leading) {
+            Text("Profile")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .padding(.top)
+            
             HStack {
-                Text("Profile")
-                    .font(.largeTitle)
+                Image(systemName: "info.circle")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+                
+                Text("Account Information")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
                     .fontWeight(.bold)
                 
                 Spacer()
@@ -40,13 +50,13 @@ struct ProfileView: View {
                     isCanNavigate: false,
                 ) {
                     Image(systemName: "pencil.circle.fill")
-                    Text("Update")
+                    Text("Edit")
                         .font(.headline)
                         .padding(4)
                 }
                 .sheet(isPresented: $isUpdateMode) {
                     VStack(alignment: .leading, spacing: 24) {
-                        Text("Update Profile")
+                        Text("Edit Profile")
                             .font(.title3.bold())
                         
                         // Name:
@@ -70,23 +80,14 @@ struct ProfileView: View {
                             HStack {
                                 Image(systemName: "book.closed")
                                 Text("Vocabulary per week")
-                                    .font(.headline)
                             }
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
                             
-                            HStack {
-                                Stepper("", value: $vocabularyPerWeek, in: 1...10)
-                                    .labelsHidden()
-                                
-                                Spacer()
-                                
-                                Text("\(vocabularyPerWeek)")
-                                    .font(.title3)
-                                    .fontWeight(.semibold)
-                                    .frame(width: 40)
-                                    .padding(.vertical, 6)
-                                    .background(Color.gray.opacity(0.15))
-                                    .cornerRadius(12)
-                            }
+                            NumberStepperView(
+                                value: $vocabularyPerWeek,
+                                range: 1...10
+                            )
                         }
                         
                         CustomPrimaryButton(
@@ -106,9 +107,10 @@ struct ProfileView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding()
                         }
+                        .padding(.top)
                     }
                     .padding(.horizontal, 28)
-                    .presentationDetents([.fraction(0.75)])
+                    .presentationDetents([.fraction(0.8)])
                     .onAppear {
                         name = viewModel.user?.name ?? "None"
                         interest = viewModel.user?.interest ?? "None"
@@ -116,57 +118,26 @@ struct ProfileView: View {
                     }
                 }
             }
-            .padding(.bottom, 24)
+            .padding(.bottom)
             
-            // User's Profile
-            VStack(spacing: 18) {
-                TextFieldWithLabelView(
-                    labelTitle: "Name",
-                    icon: "person",
-                    placeholder: "",
-                    isDisable: true,
-                    bindedData: Binding(
-                        get: { viewModel.user?.name ?? "No name" },  // Default value if user is nil
-                        set: { newValue in
-                            viewModel.user?.name = newValue
-                        }
-                    )
-                )
-                
-                TextFieldWithLabelView(
-                    labelTitle: "Interest",
-                    icon: "target",
-                    placeholder: "",
-                    isDisable: true,
-                    bindedData: Binding(
-                        get: { viewModel.user?.interest ?? "No interest" },  // Default value if user is nil
-                        set: { newValue in
-                            viewModel.user?.interest = newValue
-                        }
-                    )
-                )
-                
-                TextFieldWithLabelView(
-                    labelTitle: "Vocabulary Per Week",
-                    icon: "book.closed",
-                    placeholder: "",
-                    isDisable: true,
-                    bindedData: Binding(
-                        get: { String(viewModel.user?.vocabularyPerWeek ?? 0) },  // Default value if user is nil
-                        set: { newValue in
-                            viewModel.user?.vocabularyPerWeek = Int(newValue) ?? 0
-                        }
-                    )
-                )
-            }
+            AccountInformationCardView(
+                name: viewModel.user?.name ?? "None",
+                interest: viewModel.user?.interest ?? "None",
+                vocabularyPerWeek: String(viewModel.user?.vocabularyPerWeek ?? 0)
+            )
             
             Divider()
                 .padding(.vertical, 18)
             
-            // Account Preferences
-            Text("Account Preferences")
-                .font(.headline)
-                .padding(.bottom, 16)
+            HStack {
+                Image(systemName: "person.crop.circle.badge.checkmark")
+                
+                Text("Account Preferences")
+                    .fontWeight(.bold)
+            }
+            .font(.title3)
+            .foregroundStyle(.secondary)
+            .padding(.bottom, 16)
             
             CustomSecondaryButton(
                 action: {
@@ -176,13 +147,12 @@ struct ProfileView: View {
                 isCanNavigate: false,
             ) {
                 HStack {
+                    Image(systemName: "trash")
                     Text("Delete Account")
                         .font(.headline)
-                    
                     Spacer()
-                    
-                    Image(systemName: "chevron.right.circle.fill")
                 }
+                .foregroundStyle(.red)
                 .padding(8)
             }
             .alert("Are you sure to permanently delete this account?", isPresented: $isShowAlert) {
@@ -191,7 +161,6 @@ struct ProfileView: View {
                     hasOnboarded = false
                 }
             }
-            .tint(.black)
             
             Spacer()
         }

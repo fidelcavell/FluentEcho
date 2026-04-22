@@ -77,6 +77,25 @@ class ContentViewModel {
         isLoading = false
     }
     
+    func updateLearnedStatus(byId id: UUID) {
+        let descriptor = FetchDescriptor<Vocabulary>(
+            predicate: #Predicate {
+                $0.id == id
+            }
+        )
+        
+        do {
+            guard let selectedVocabulary = try context.fetch(descriptor).first else {
+                return
+            }
+            selectedVocabulary.isLearned = !selectedVocabulary.isLearned
+            try context.save()
+            
+        } catch {
+            print("Failed to update Vocabulary learning status: ", error)
+        }
+    }
+    
     func searchVocabulary() {
         // TODO - Add logic to filter the list of vocabulary
     }

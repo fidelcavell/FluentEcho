@@ -13,6 +13,7 @@ class Vocabulary: Identifiable {
     @Attribute(.unique) var id: UUID
     var word: String
     var tag: String
+    var isLearned: Bool
     var pronunciation: String
     var meaningEN: String
     var meaningID: String
@@ -26,6 +27,7 @@ class Vocabulary: Identifiable {
         self.id = UUID()
         self.word = word
         self.tag = tag
+        self.isLearned = false
         self.pronunciation = pronunciation
         self.meaningEN = meaningEN
         self.meaningID = meaningID

@@ -17,12 +17,14 @@ struct TextFieldWithLabelView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label(labelTitle, systemImage: icon)
-                .font(.headline)
+                .font(.subheadline)
+                .fontWeight(.semibold)
             
             TextField(placeholder, text: $bindedData)
+                .font(.subheadline)
                 .padding()
                 .background(Color.gray.opacity(0.1))
-                .cornerRadius(12)
+                .cornerRadius(16)
                 .disabled(isDisable)
         }
     }
@@ -34,6 +36,6 @@ struct TextFieldWithLabelView: View {
         icon: "person",
         placeholder: "Your name",
         isDisable: false,
-        bindedData: .constant("")
+        bindedData: .constant("Name")
     )
 }
