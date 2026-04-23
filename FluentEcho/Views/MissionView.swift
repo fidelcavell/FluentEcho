@@ -21,11 +21,13 @@ struct MissionView: View {
         NavigationStack {
             VStack(spacing: 16) {
                 if let user = viewModel.user {
+                    AvatarAndNameView(username: user.name)
+                        .padding(.horizontal)
+                    
                     WeeklyProgressionView(
-                        currentLearnedPerWeek: 1,
+                        currentLearnedPerWeek: Float(user.currentLearnedVocabulary),
                         totalLearnedPerWeek: Float(user.vocabularyPerWeek)
                     )
-                    .padding(.horizontal)
                 }
                 
                 TabView(selection: $currentIndex) {

@@ -16,13 +16,8 @@ struct VocabularyInformationCardView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Text(selectedVocabulary.word)
-                        .font(.title)
-                        .fontDesign(.rounded)
-                        .fontWeight(.bold)
-                    
                     Spacer()
                     
                     CustomSecondaryButton(
@@ -41,10 +36,16 @@ struct VocabularyInformationCardView: View {
                         .foregroundStyle(selectedVocabulary.isLearned ? .green : .red)
                     }
                 }
+                .padding(.bottom, 8)
+                
+                Text(selectedVocabulary.word)
+                    .font(.title)
+                    .fontDesign(.rounded)
+                    .fontWeight(.bold)
                 
                 HStack(spacing: 12) {
                     Text(selectedVocabulary.pronunciation)
-                        .font(.title3)
+                        .font(.body)
                         .fontDesign(.rounded)
                     
                     CustomSecondaryButton(
@@ -55,9 +56,8 @@ struct VocabularyInformationCardView: View {
                         isCanNavigate: false,
                     ) {
                         Image(systemName: "speaker.wave.2")
-                            .font(.title2)
+                            .font(.title3)
                             .fontWeight(.bold)
-                            .padding(2)
                     }
                 }
                 

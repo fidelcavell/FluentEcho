@@ -26,7 +26,6 @@ class ContentViewModel {
     private var cachedVocabularies: [String: [Vocabulary]] = [:]
     
     func fetchUser() {
-        isLoading = true
         let descriptor = FetchDescriptor<User>()
         
         do {
@@ -37,7 +36,6 @@ class ContentViewModel {
         } catch {
             print("Failed to fetch user: ", error)
         }
-        isLoading = false
     }
     
     func fetchVocabularies(selectedTag: String) {
@@ -88,8 +86,15 @@ class ContentViewModel {
             guard let selectedVocabulary = try context.fetch(descriptor).first else {
                 return
             }
-            selectedVocabulary.isLearned = !selectedVocabulary.isLearned
-            try context.save()
+            
+            if let existingUser = user {
+                existingUser.currentLearnedVocabulary += selectedVocabulary.isLearned ? -1 : 1
+                selectedVocabulary.isLearned = !selectedVocabulary.isLearned
+                try context.save()
+                
+            } else {
+                print("ERROR")
+            }
             
         } catch {
             print("Failed to update Vocabulary learning status: ", error)

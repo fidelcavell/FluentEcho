@@ -12,15 +12,16 @@ struct WeeklyProgressionView: View {
     var totalLearnedPerWeek: Float
     
     var progress: CGFloat {
-        CGFloat(currentLearnedPerWeek / max(totalLearnedPerWeek, 1))
+        let raw = currentLearnedPerWeek / max(totalLearnedPerWeek, 1)
+        return max(0, min(CGFloat(raw), 1.0))
     }
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             ZStack {
                 Circle()
-                    .stroke(Color.white.opacity(0.3), lineWidth: 3)
-                    .frame(width: 48, height: 48)
+                    .stroke(.white.opacity(0.3), lineWidth: 3)
+                    .frame(width: 42, height: 42)
                 
                 Image(systemName: "target")
                     .foregroundColor(.white)
@@ -29,13 +30,12 @@ struct WeeklyProgressionView: View {
             
             VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Weekly Learning Goal")
+                    Text("Weekly Learned Vocabulary")
                         .font(.headline)
                         .foregroundColor(.white)
                     
                     Text("Progression will reset every monday")
                         .font(.caption2)
-                        .fontWeight(.semibold)
                         .foregroundStyle(.secondary)
                 }
                 
@@ -59,12 +59,19 @@ struct WeeklyProgressionView: View {
                             .animation(.easeInOut(duration: 0.6), value: progress)
                         
                         // Progression label
-                        Text("\(Int(currentLearnedPerWeek)) of \(Int(totalLearnedPerWeek)) vocabularies")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .padding(.leading)
-                            .frame(height: 24, alignment: .leading)
+                        HStack {
+                            Image(systemName: currentLearnedPerWeek >= totalLearnedPerWeek ? "trophy" : "progress.indicator")
+                            
+                            Text(
+                                "\(currentLearnedPerWeek >= totalLearnedPerWeek ? "Mission Completed" : "On Progress") " +
+                                "(\(Int(currentLearnedPerWeek))/\(Int(totalLearnedPerWeek)))"
+                            )
+                        }
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .padding(.leading)
+                        .frame(height: 24, alignment: .leading)
                     }
                 }
                 .frame(height: 18)

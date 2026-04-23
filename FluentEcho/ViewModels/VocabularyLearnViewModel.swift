@@ -16,8 +16,10 @@ class VocabularyLearnViewModel {
     
     init(context: ModelContext) {
         self.context = context
+        fetchUser()
     }
     
+    var user: User?
     var recordedAudioURL: URL? = nil
     
     // Used as a state to indicate that user are still recording their voice or not (by holding recording button)
@@ -31,6 +33,19 @@ class VocabularyLearnViewModel {
         recordedAudioURL != nil && !isRecording
     }
     
+    func fetchUser() {
+        let descriptor = FetchDescriptor<User>()
+        
+        do {
+            let fetchedUser = try context.fetch(descriptor)
+            self.user = fetchedUser.first
+            print("FETCH USER is performed!")
+            
+        } catch {
+            print("Failed to fetch user: ", error)
+        }
+    }
+    
     func updateLearnedStatus(byId id: UUID) {
         let descriptor = FetchDescriptor<Vocabulary>(
             predicate: #Predicate {
@@ -42,8 +57,15 @@ class VocabularyLearnViewModel {
             guard let selectedVocabulary = try context.fetch(descriptor).first else {
                 return
             }
-            selectedVocabulary.isLearned = !selectedVocabulary.isLearned
-            try context.save()
+            
+            if let existingUser = user {
+                existingUser.currentLearnedVocabulary += selectedVocabulary.isLearned ? -1 : 1
+                selectedVocabulary.isLearned = !selectedVocabulary.isLearned
+                try context.save()
+                
+            } else {
+                print("ERROR")
+            }
             
         } catch {
             print("Failed to update Vocabulary learning status: ", error)
