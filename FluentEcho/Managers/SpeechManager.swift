@@ -9,26 +9,31 @@ import Foundation
 import AVFoundation
 import Combine
 
-// Still using 'Combine' -> Prev method version -> need to update to latest(?)
-class SpeechManager: ObservableObject {
+class SpeechManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+    // This line of code is warning
     private let synthesizer = AVSpeechSynthesizer()
     
-    //@Published var isSpeaking: Bool = false
+    @Published var isSpeaking: Bool = false
     
     func speak(targetedText: String) {
         let utterance = AVSpeechUtterance(string: targetedText)
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         utterance.rate = 0.5
         utterance.pitchMultiplier = 1.0
-        utterance.volume = 1.0
+        utterance.volume = 2.0
         
         synthesizer.speak(utterance)
-        //isSpeaking = true
+        synthesizer.delegate = self
+        isSpeaking = true
     }
     
-    // Should this func stop() deleted?
     func stop() {
         synthesizer.stopSpeaking(at: .immediate)
-        //isSpeaking = false
+        isSpeaking = false
+    }
+    
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        // When the speech finishes, set isSpeaking to false
+        isSpeaking = false
     }
 }

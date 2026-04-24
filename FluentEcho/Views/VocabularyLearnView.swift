@@ -66,9 +66,7 @@ struct VocabularyLearnView: View {
                             Spacer()
                             
                             CustomPrimaryButton(
-                                action: {
-                                    viewModel.recordedAudioURL = nil
-                                },
+                                action: {},
                                 destination: RecordingPracticeView(
                                     context: context,
                                     selectedPractice: SelectedPracticeData(
@@ -76,7 +74,7 @@ struct VocabularyLearnView: View {
                                         selectedVocabulary: selectedVocabulary
                                     ),
                                 ),
-                                isCanNavigate: true,
+                                isCanNavigate: true
                             ) {
                                 HStack {
                                     Image(systemName: "microphone")
@@ -129,14 +127,6 @@ struct VocabularyLearnView: View {
                             .padding(2)
                         }
                     }
-                    
-                    ScrollView {
-                        VStack {
-                            ForEach(selectedVocabulary.learnHistory.reversed().prefix(5), id: \.id) { item in
-                                LearnHistoryItemView(selectedLearnHistory: item)
-                            }
-                        }
-                    }
                 }
                 
                 Spacer()
@@ -154,30 +144,6 @@ struct VocabularyLearnView: View {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: User.self, configurations: config)
     let context = container.mainContext
-    
-    let dummyHistory = LearnHistory(
-        date: Date(),
-        practiceSentenceIndex: 1,
-        recordedAudio: "",
-        vocabulary: Vocabulary(
-            word: "Agile",
-            tag: "Technology",
-            pronunciation: "a-jail",
-            meaningEN: "A flexible and iterative approach to project management",
-            meaningID: "Pendekatan yang fleksibel dan iteratif dalam manajemen proyek",
-            practiceSentencesEN: [
-                "Our team uses Agile to deliver features in short sprints.",
-                "Agile allows quick adaptation to changes.",
-                "Daily standups are part of Agile.",
-            ],
-            practiceSentencesID: [
-                "Tim kami menggunakan Agile untuk menyampaikan fitur dalam sprint singkat.",
-                "Agile memungkinkan adaptasi cepat terhadap perubahan.",
-                "Standup harian adalah bagian dari Agile."
-            ],
-            learnHistory: []
-        )
-    )
     
     VocabularyLearnView(
         context: context,
@@ -197,9 +163,7 @@ struct VocabularyLearnView: View {
                 "Agile memungkinkan adaptasi cepat terhadap perubahan.",
                 "Standup harian adalah bagian dari Agile."
             ],
-            learnHistory: [
-                dummyHistory, dummyHistory
-            ]
+            learnHistory: []
         )
     )
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-struct SearchVocabularyItemView: View {
+struct ExploreItemView: View {
     @Environment(\.modelContext) private var context: ModelContext
     var selectedVocabulary: Vocabulary
     
@@ -29,8 +29,8 @@ struct SearchVocabularyItemView: View {
                 Spacer()
                 
                 HStack {
-                    Image(systemName: selectedVocabulary.isLearned ? "checkmark.circle" : "xmark.circle")
-                    Text(selectedVocabulary.isLearned ? "Completed" : "Incomplete")
+                    Image(systemName: selectedVocabulary.isCompleted ? "checkmark.circle" : "xmark.circle")
+                    Text(selectedVocabulary.isCompleted ? "Completed" : "Incomplete")
                         .fontWeight(.semibold)
                 }
                 .font(.caption)
@@ -38,7 +38,7 @@ struct SearchVocabularyItemView: View {
                 .foregroundStyle(.white)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(selectedVocabulary.isLearned ? Color.green : Color.red)
+                .background(selectedVocabulary.isCompleted ? Color.green : Color.red)
                 .clipShape(Capsule())
             }
         }
@@ -46,7 +46,7 @@ struct SearchVocabularyItemView: View {
 }
 
 #Preview {
-    SearchVocabularyItemView(
+    ExploreItemView(
         selectedVocabulary: Vocabulary(
             word: "Agile",
             tag: "Technology",

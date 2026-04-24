@@ -58,28 +58,32 @@ struct AddInitialUserView: View {
                 )
             }
             
-            // Button
-            Button(action: {
-                viewModel.addUpdateUser(
-                    name: name,
-                    interest: interest,
-                    vocabularyPerWeek: vocabularyPerWeek
-                )
-                hasOnboarded = true
-            }) {
-                Text("Set Up")
+            CustomPrimaryButton(
+                action: {
+                    viewModel.addUpdateUser(
+                        name: name,
+                        interest: interest,
+                        vocabularyPerWeek: vocabularyPerWeek
+                    )
+                    hasOnboarded = true
+                },
+                destination: EmptyView(),
+                isCanNavigate: false
+            ) {
+                Text("Create your profile")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
             }
-            .buttonStyle(.glassProminent)
-            .buttonBorderShape(.roundedRectangle(radius: 16))
-            .tint(.green)
-            .padding(.top, 48)
             
             Spacer()
         }
         .padding(.horizontal, 28)
+        .alert("Data must not be empty!", isPresented: $viewModel.showAlert) {
+            Button("Ok", role: .cancel) {
+                viewModel.showAlert = false
+            }
+        }
     }
 }
 

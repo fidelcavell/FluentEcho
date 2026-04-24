@@ -12,7 +12,7 @@ struct MissionItemCardView: View {
     @Environment(\.modelContext) private var context: ModelContext
     @StateObject private var speaker = SpeechManager()
     
-    var viewModel: ContentViewModel
+    var viewModel: MissionViewModel
     var selectedVocabulary: Vocabulary
     
     var body: some View {
@@ -27,12 +27,12 @@ struct MissionItemCardView: View {
                     isCanNavigate: false
                 ) {
                     HStack {
-                        Image(systemName: selectedVocabulary.isLearned ? "checkmark.circle" : "xmark.circle")
-                        Text(selectedVocabulary.isLearned ? "Completed" : "Incomplete")
+                        Image(systemName: selectedVocabulary.isCompleted ? "checkmark.circle" : "xmark.circle")
+                        Text(selectedVocabulary.isCompleted ? "Completed" : "Incomplete")
                             .fontWeight(.semibold)
                     }
                     .font(.caption)
-                    .foregroundStyle(selectedVocabulary.isLearned ? .green : .red)
+                    .foregroundStyle(selectedVocabulary.isCompleted ? .green : .red)
                 }
             }
             
@@ -48,10 +48,11 @@ struct MissionItemCardView: View {
                 
                 CustomSecondaryButton(
                     action: {
-                        speaker.speak(targetedText: selectedVocabulary.word)
+                        speaker.isSpeaking ? speaker.stop() : speaker.speak(targetedText: selectedVocabulary.word)
                     },
                     destination: EmptyView(),
-                    isCanNavigate: false
+                    isCanNavigate: false,
+                    tint: speaker.isSpeaking ? .red : .green
                 ) {
                     Image(systemName: "speaker.wave.2")
                         .font(.title2)
@@ -95,8 +96,7 @@ struct MissionItemCardView: View {
             .ultraThinMaterial,
             in: RoundedRectangle(cornerRadius: 16)
         )
-        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 2)
-        .padding(.horizontal)
+        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
     }
 }
 
@@ -106,7 +106,7 @@ struct MissionItemCardView: View {
     let context = container.mainContext
     
     MissionItemCardView(
-        viewModel: ContentViewModel(context: context),
+        viewModel: MissionViewModel(context: context),
         selectedVocabulary: Vocabulary(
             word: "Agile",
             tag: "Technology",

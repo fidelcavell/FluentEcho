@@ -10,11 +10,11 @@ import SwiftData
 
 struct MissionView: View {
     @Environment(\.modelContext) private var context: ModelContext
-    @State private var viewModel: ContentViewModel
+    @State private var viewModel: MissionViewModel
     @State private var currentIndex: Int = 0
     
     init(context: ModelContext) {
-        _viewModel = State(initialValue: ContentViewModel(context: context))
+        _viewModel = State(initialValue: MissionViewModel(context: context))
     }
     
     var body: some View {
@@ -22,6 +22,7 @@ struct MissionView: View {
             VStack(spacing: 16) {
                 if let user = viewModel.user {
                     AvatarAndNameView(username: user.name)
+                        .padding(.top)
                         .padding(.horizontal)
                     
                     WeeklyProgressionView(
@@ -44,7 +45,7 @@ struct MissionView: View {
                 .frame(maxHeight: 500)
                 
                 HStack(spacing: 6) {
-                    ForEach(0...4, id: \.self) { index in
+                    ForEach(viewModel.vocabularies.indices, id: \.self) { index in
                         Circle()
                             .fill(index == currentIndex ? Color.green : Color.gray.opacity(0.3))
                             .frame(width: 8, height: 8)
@@ -53,17 +54,21 @@ struct MissionView: View {
                 
                 Spacer()
             }
-            // Instead of task, maybe it can be changed by using .onAppear
-            .task {
+            .onAppear {
                 if let interest = viewModel.user?.interest {
                     viewModel.fetchVocabularies(selectedTag: interest)
                 }
             }
-            
-            // This can be deleted soon, if no data that would change dynamicly in this same screen
-            .onChange(of: viewModel.user?.interest) { _, newValue in
+            .onChange(of: viewModel.user?.interest) { oldValue, newValue in
+                // If the interest has changed, refetch vocabularies
                 if let interest = newValue {
                     viewModel.fetchVocabularies(selectedTag: interest)
+                }
+            }
+            .onChange(of: viewModel.user?.vocabularyPerWeek) { _, newValue in
+                // If the vocabulary per week changes, adjust the vocabulary count
+                if let user = viewModel.user {
+                    viewModel.fetchVocabularies(selectedTag: user.interest)
                 }
             }
         }

@@ -16,7 +16,6 @@ struct LearnHistoryItemView: View {
             HStack {
                 Text(selectedLearnHistory.date.formatted(
                     .dateTime
-                        .weekday(.wide)
                         .day()
                         .month(.wide)
                         .year()
@@ -46,14 +45,14 @@ struct LearnHistoryItemView: View {
                 CustomPrimaryButton(
                     action: {
                         if let url = URL(string: selectedLearnHistory.recordedAudio) {
-                            audio.playback(url: url)
-                            print(url)
+                            audio.isPlaying ? audio.stopPlayback() : audio.playback(url: url)
                         }
                     },
                     destination: EmptyView(),
-                    isCanNavigate: false
+                    isCanNavigate: false,
+                    tint: audio.isPlaying ? .red : .green
                 ) {
-                    Image(systemName: "play.circle")
+                    Image(systemName: audio.isPlaying ? "pause.circle" : "play.circle")
                         .font(.headline)
                         .foregroundStyle(.white)
                 }

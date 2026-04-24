@@ -9,9 +9,11 @@ import Foundation
 import AVFoundation
 import Combine
 
-class AudioManager: ObservableObject {
-    var recorder: AVAudioRecorder?
+class AudioManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
+    private var recorder: AVAudioRecorder?
     private var player: AVAudioPlayer?
+    
+    @Published var isPlaying: Bool = false
     
     func requestMicrophonePermission(completion: @escaping (Bool) -> Void) {
         AVAudioApplication.requestRecordPermission { granted in
@@ -55,10 +57,23 @@ class AudioManager: ObservableObject {
     func playback(url: URL) {
         do {
             player = try AVAudioPlayer(contentsOf: url)
+            player?.volume = 10
+            player?.delegate = self
+            isPlaying = true
             player?.play()
             
         } catch {
             print("Failed to playback audio:", error)
         }
+    }
+    
+    func stopPlayback() {
+        player?.stop()
+        isPlaying = false
+    }
+    
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        // When the audio play finishes, set isPlaying to false
+        isPlaying = false
     }
 }

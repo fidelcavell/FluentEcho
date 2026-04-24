@@ -88,7 +88,7 @@ struct RecordingPracticeView: View {
                 
                 RecordedPreviewCardView(
                     playbackPreview: {
-                        viewModel.playRecording()
+                        viewModel.playPreviewRecording()
                     },
                     savePreview: {
                         viewModel.saveRecordingPractice(
@@ -133,6 +133,9 @@ struct RecordingPracticeView: View {
             }
             
             Spacer()
+        }
+        .onAppear {
+            viewModel.recordedAudioURL = nil
         }
         .padding(28)
         .navigationTitle("Recording Practice")

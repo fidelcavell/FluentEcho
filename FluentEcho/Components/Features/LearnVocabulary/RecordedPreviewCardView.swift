@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct RecordedPreviewCardView: View {
+    @StateObject private var audio = AudioManager()
     
     var playbackPreview: () -> Void
     var savePreview: () -> Void
@@ -32,9 +33,10 @@ struct RecordedPreviewCardView: View {
                         playbackPreview()
                     },
                     destination: EmptyView(),
-                    isCanNavigate: false
+                    isCanNavigate: false,
+                    tint: audio.isPlaying ? .red : .green
                 ) {
-                    Image(systemName: "play.fill")
+                    Image(systemName: audio.isPlaying ? "pause.fill" : "play.fill")
                 }
             }
             
@@ -49,7 +51,6 @@ struct RecordedPreviewCardView: View {
                     HStack {
                         Image(systemName: "trash")
                         Text("Discard")
-                        
                     }
                     .padding(.vertical, 8)
                     .font(.subheadline)

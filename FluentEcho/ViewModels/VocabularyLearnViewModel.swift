@@ -28,7 +28,6 @@ class VocabularyLearnViewModel {
     // Used as indicator of permission granted to show alert or not
     var isPermissionGranted = true
     
-    // Used to show preview after user just record their practice's voice
     var hasPreview: Bool {
         recordedAudioURL != nil && !isRecording
     }
@@ -59,8 +58,8 @@ class VocabularyLearnViewModel {
             }
             
             if let existingUser = user {
-                existingUser.currentLearnedVocabulary += selectedVocabulary.isLearned ? -1 : 1
-                selectedVocabulary.isLearned = !selectedVocabulary.isLearned
+                existingUser.currentLearnedVocabulary += selectedVocabulary.isCompleted ? -1 : 1
+                selectedVocabulary.isCompleted = !selectedVocabulary.isCompleted
                 try context.save()
                 
             } else {
@@ -95,12 +94,7 @@ class VocabularyLearnViewModel {
                     
                     guard let recordedURL = self.recordedAudioURL else { return }
                     
-                    print("---------")
-                    print(recordedURL)
-                    print("---------")
-                    
                     self.audioManager.startRecording(url: recordedURL)
-                    
                     print("Microphone permission granted! [VIEWMODEL]")
                     
                 } else {
@@ -111,13 +105,13 @@ class VocabularyLearnViewModel {
         }
     }
     
-    func playRecording() {
+    func playPreviewRecording() {
         guard let url = recordedAudioURL else { return }
         audioManager.playback(url: url)
     }
     
-    func stopRecording() {
-        isRecording = false
+    func stopPreviewRecording() {
+        self.isRecording = false
         audioManager.stopRecording()
     }
     

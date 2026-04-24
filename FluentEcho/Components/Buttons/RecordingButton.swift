@@ -44,10 +44,10 @@ struct RecordingButton: View {
                     .onEnded {_ in
                         // Release the mic button -> Stop Recording
                         if viewModel.isRecording {
-                            viewModel.stopRecording()
+                            viewModel.stopPreviewRecording()
                         }
                         
-                        // Execute "Dismiss practice sheet" when the permission is not granted
+                        // Execute when the permission is not granted
                         if !viewModel.isPermissionGranted {
                             viewModel.recordedAudioURL = nil
                             showPermissionAlert = true

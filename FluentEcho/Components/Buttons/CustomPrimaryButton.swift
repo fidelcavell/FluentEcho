@@ -15,6 +15,8 @@ struct CustomPrimaryButton<Content: View, Destination: View>: View {
     var destination: Destination
     var isCanNavigate: Bool
     
+    var tint: Color = .green
+    
     @ViewBuilder
     var content: () -> Content
     
@@ -36,7 +38,7 @@ struct CustomPrimaryButton<Content: View, Destination: View>: View {
         }
         .buttonStyle(.glassProminent)
         .buttonBorderShape(.roundedRectangle(radius: 16))
-        .tint(.green)
+        .tint(tint)
     }
 }
 

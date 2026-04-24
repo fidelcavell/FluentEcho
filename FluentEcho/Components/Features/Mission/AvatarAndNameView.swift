@@ -26,7 +26,10 @@ struct AvatarAndNameView: View {
     var body: some View {
         HStack {
             ZStack {
-                Circle().frame(width: 52, height: 52)
+                Circle()
+                    .fill(.ultraThinMaterial)
+                    .frame(width: 52, height: 52)
+                
                 Text(username
                     .split(separator: " ")
                     .prefix(2)
@@ -34,12 +37,12 @@ struct AvatarAndNameView: View {
                     .joined()
                     .uppercased()
                 )
-                .foregroundStyle(.white)
+                .fontWeight(.semibold)
             }
             
             VStack(alignment: .leading) {
                 Text("\(greeting)!")
-                    .font(.body)
+                    .font(.callout)
                 
                 Text(username)
                     .font(.title3)

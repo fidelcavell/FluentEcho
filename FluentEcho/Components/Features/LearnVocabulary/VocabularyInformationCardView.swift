@@ -28,15 +28,14 @@ struct VocabularyInformationCardView: View {
                         isCanNavigate: false
                     ) {
                         HStack {
-                            Image(systemName: selectedVocabulary.isLearned ? "checkmark.circle" : "xmark.circle")
-                            Text(selectedVocabulary.isLearned ? "Completed" : "Incomplete")
+                            Image(systemName: selectedVocabulary.isCompleted ? "checkmark.circle" : "xmark.circle")
+                            Text(selectedVocabulary.isCompleted ? "Completed" : "Incomplete")
                                 .fontWeight(.semibold)
                         }
                         .font(.caption)
-                        .foregroundStyle(selectedVocabulary.isLearned ? .green : .red)
+                        .foregroundStyle(selectedVocabulary.isCompleted ? .green : .red)
                     }
                 }
-                .padding(.bottom, 8)
                 
                 Text(selectedVocabulary.word)
                     .font(.title)
