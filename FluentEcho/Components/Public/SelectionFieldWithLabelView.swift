@@ -10,7 +10,7 @@ import SwiftUI
 struct SelectionFieldWithLabelView: View {
     var labelTitle: String
     var icon: String
-    @Binding var bindedData: String
+    @Binding var text: String
     
     private let selectionOptions = ["Technology", "Design"]
     
@@ -22,21 +22,21 @@ struct SelectionFieldWithLabelView: View {
             
             ForEach(selectionOptions, id: \.self) { option in
                 HStack {
-                    Image(systemName: bindedData == option ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(bindedData == option ? .white : .green)
+                    Image(systemName: text == option ? "checkmark.circle.fill" : "circle")
+                        .foregroundColor(text == option ? .white : .green)
                     
                     Text(option)
-                        .foregroundColor(bindedData == option ? .white : .primary)
+                        .foregroundColor(text == option ? .white : .primary)
                     
                     Spacer()
                 }
                 .padding()
-                .background(bindedData == option ? .green : .gray.opacity(0.1))
+                .background(text == option ? .green : .gray.opacity(0.1))
                 .cornerRadius(16)
                 .contentShape(Rectangle())
                 .onTapGesture {
                     withAnimation(.easeInOut) {
-                        bindedData = option
+                        text = option
                     }
                 }
             }
@@ -48,6 +48,6 @@ struct SelectionFieldWithLabelView: View {
     SelectionFieldWithLabelView(
         labelTitle: "Interest",
         icon: "target",
-        bindedData: .constant("Technology")
+        text: .constant("Technology")
     )
 }

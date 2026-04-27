@@ -6,13 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct RecordedPreviewCardView: View {
-    @StateObject private var audio = AudioManager()
+    @ObservedObject var audio: AudioManager
     
-    var playbackPreview: () -> Void
-    var savePreview: () -> Void
-    var discardPreview: () -> Void
+    var viewModel: VocabularyLearnViewModel
+    var selectedPractice: SelectedPracticeData
     
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -30,7 +30,7 @@ struct RecordedPreviewCardView: View {
                 
                 CustomSecondaryButton(
                     action: {
-                        playbackPreview()
+                        viewModel.audio.isPlaying ? viewModel.stopPreviewRecording() : viewModel.playPreviewRecording()
                     },
                     destination: EmptyView(),
                     isCanNavigate: false,
@@ -43,7 +43,10 @@ struct RecordedPreviewCardView: View {
             HStack(spacing: 16) {
                 CustomSecondaryButton(
                     action: {
-                        discardPreview()
+                        if let url = viewModel.recordedAudioURL {
+                            try? FileManager.default.removeItem(at: url)
+                        }
+                        viewModel.recordedAudioURL = nil
                     },
                     destination: EmptyView(),
                     isCanNavigate: false
@@ -61,7 +64,11 @@ struct RecordedPreviewCardView: View {
                 
                 CustomPrimaryButton(
                     action: {
-                        savePreview()
+                        viewModel.saveRecordingPractice(
+                            targetedIndex: selectedPractice.index,
+                            targetedVocabulary: selectedPractice.selectedVocabulary
+                        )
+                        viewModel.recordedAudioURL = nil
                     },
                     destination: EmptyView(),
                     isCanNavigate: false
@@ -89,12 +96,34 @@ struct RecordedPreviewCardView: View {
         .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
     }
 }
-
-#Preview {
-    RecordedPreviewCardView(
-        playbackPreview: {},
-        savePreview: {},
-        discardPreview: {}
-    )
-    .padding()
-}
+//
+//#Preview {
+//    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+//    let container = try! ModelContainer(for: Vocabulary.self, configurations: config)
+//    let context = container.mainContext
+//    
+//    RecordedPreviewCardView(
+//        viewModel: VocabularyLearnViewModel(context: context),
+//        selectedPractice: SelectedPracticeData(
+//            index: 1,
+//            selectedVocabulary: Vocabulary(
+//                word: "Agile",
+//                tag: "Technology",
+//                pronunciation: "a-jail",
+//                meaningEN: "A flexible and iterative approach to project management",
+//                meaningID: "Pendekatan yang fleksibel dan iteratif dalam manajemen proyek",
+//                practiceSentencesEN: [
+//                    "Our team uses Agile to deliver features in short sprints.",
+//                    "Agile allows quick adaptation to changes.",
+//                    "Daily standups are part of Agile.",
+//                ],
+//                practiceSentencesID: [
+//                    "Tim kami menggunakan Agile untuk menyampaikan fitur dalam sprint singkat.",
+//                    "Agile memungkinkan adaptasi cepat terhadap perubahan.",
+//                    "Standup harian adalah bagian dari Agile."
+//                ],
+//                learnHistory: []
+//            )
+//        )
+//    )
+//}

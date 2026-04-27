@@ -15,70 +15,69 @@ struct VocabularyInformationCardView: View {
     var updateLearnedStatusAction: () -> Void
     
     var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Spacer()
-                    
-                    CustomSecondaryButton(
-                        action: {
-                            updateLearnedStatusAction()
-                        },
-                        destination: EmptyView(),
-                        isCanNavigate: false
-                    ) {
-                        HStack {
-                            Image(systemName: selectedVocabulary.isCompleted ? "checkmark.circle" : "xmark.circle")
-                            Text(selectedVocabulary.isCompleted ? "Completed" : "Incomplete")
-                                .fontWeight(.semibold)
-                        }
-                        .font(.caption)
-                        .foregroundStyle(selectedVocabulary.isCompleted ? .green : .red)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Spacer()
+                
+                CustomSecondaryButton(
+                    action: {
+                        updateLearnedStatusAction()
+                    },
+                    destination: EmptyView(),
+                    isCanNavigate: false
+                ) {
+                    HStack {
+                        Image(systemName: selectedVocabulary.isCompleted ? "checkmark.circle" : "xmark.circle")
+                        Text(selectedVocabulary.isCompleted ? "Completed" : "Incomplete")
+                            .fontWeight(.semibold)
                     }
+                    .font(.caption)
+                    .foregroundStyle(selectedVocabulary.isCompleted ? .green : .red)
                 }
-                
-                Text(selectedVocabulary.word)
-                    .font(.title)
-                    .fontDesign(.rounded)
-                    .fontWeight(.bold)
-                
-                HStack(spacing: 12) {
-                    Text(selectedVocabulary.pronunciation)
-                        .font(.body)
-                        .fontDesign(.rounded)
-                    
-                    CustomSecondaryButton(
-                        action: {
-                            speaker.speak(targetedText: selectedVocabulary.word)
-                        },
-                        destination: EmptyView(),
-                        isCanNavigate: false,
-                    ) {
-                        Image(systemName: "speaker.wave.2")
-                            .font(.title3)
-                            .fontWeight(.bold)
-                    }
-                }
-                
-                VStack(alignment: .leading ,spacing: 16) {
-                    Text(selectedVocabulary.meaningEN)
-                        .font(.headline)
-                    
-                    Text(selectedVocabulary.meaningID)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .multilineTextAlignment(.leading)
-                .padding(.top, 12)
             }
-            .padding(18)
-            .frame(maxWidth: .infinity)
-            .background(
-                .ultraThinMaterial,
-                in: RoundedRectangle(cornerRadius: 16)
-            )
-            .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 2)
+            
+            Text(selectedVocabulary.word)
+                .font(.title)
+                .fontDesign(.rounded)
+                .fontWeight(.bold)
+            
+            HStack(spacing: 12) {
+                Text(selectedVocabulary.pronunciation)
+                    .font(.body)
+                    .fontDesign(.rounded)
+                
+                CustomSecondaryButton(
+                    action: {
+                        speaker.isSpeaking ? speaker.stop() : speaker.speak(targetedText: selectedVocabulary.word)
+                    },
+                    destination: EmptyView(),
+                    isCanNavigate: false,
+                    tint: speaker.isSpeaking ? .red : .green
+                ) {
+                    Image(systemName: "speaker.wave.2")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                }
+            }
+            
+            VStack(alignment: .leading ,spacing: 16) {
+                Text(selectedVocabulary.meaningEN)
+                    .font(.headline)
+                
+                Text(selectedVocabulary.meaningID)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .multilineTextAlignment(.leading)
+            .padding(.top, 12)
         }
+        .padding(18)
+        .frame(maxWidth: .infinity)
+        .background(
+            .ultraThinMaterial,
+            in: RoundedRectangle(cornerRadius: 16)
+        )
+        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 2)
     }
 }
 

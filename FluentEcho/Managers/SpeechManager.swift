@@ -10,20 +10,36 @@ import AVFoundation
 import Combine
 
 class SpeechManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
-    // This line of code is warning
     private let synthesizer = AVSpeechSynthesizer()
     
     @Published var isSpeaking: Bool = false
     
+    override init() {
+        super.init()
+        synthesizer.delegate = self
+    }
+    
     func speak(targetedText: String) {
+        guard !targetedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return
+        }
+        
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .default)
+            try session.setActive(true)
+            
+        } catch {
+            print("Audio session error:", error)
+        }
+        
         let utterance = AVSpeechUtterance(string: targetedText)
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         utterance.rate = 0.5
         utterance.pitchMultiplier = 1.0
-        utterance.volume = 2.0
+        utterance.volume = 1.0
         
         synthesizer.speak(utterance)
-        synthesizer.delegate = self
         isSpeaking = true
     }
     

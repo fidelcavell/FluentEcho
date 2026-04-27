@@ -19,7 +19,7 @@ struct AccountInformationCardView: View {
                 icon: "person",
                 placeholder: "",
                 isDisable: true,
-                bindedData: .constant(name)
+                text: .constant(name)
             )
             
             TextFieldWithLabelView(
@@ -27,7 +27,7 @@ struct AccountInformationCardView: View {
                 icon: "target",
                 placeholder: "",
                 isDisable: true,
-                bindedData: .constant(interest)
+                text: .constant(interest)
             )
             
             TextFieldWithLabelView(
@@ -35,7 +35,7 @@ struct AccountInformationCardView: View {
                 icon: "book.closed",
                 placeholder: "",
                 isDisable: true,
-                bindedData: .constant(vocabularyPerWeek)
+                text: .constant(vocabularyPerWeek)
             )
         }
         .padding(24)

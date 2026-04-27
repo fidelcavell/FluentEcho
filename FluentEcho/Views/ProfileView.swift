@@ -14,9 +14,11 @@ struct ProfileView: View {
         _viewModel = State(initialValue: ProfileViewModel(context: context))
     }
     @AppStorage("hasOnboarded") var hasOnboarded: Bool?
+    @AppStorage("isNotificationEnabled") private var isNotificationEnabled: Bool = false
     
     @State private var isUpdateMode: Bool = false
-    @State private var isShowAlert: Bool = false
+    @State private var isShowDeleteAlert: Bool = false
+    @State private var isShowNotificationDenied: Bool = false
     
     // Editing variable State
     @State private var name: String = ""
@@ -51,77 +53,79 @@ struct ProfileView: View {
                             .padding(4)
                     }
                     .sheet(isPresented: $isUpdateMode) {
-                        VStack(alignment: .leading, spacing: 24) {
-                            HStack {
-                                Text("Edit Profile")
-                                    .font(.title2.bold())
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 24) {
+                                HStack {
+                                    Text("Edit Profile")
+                                        .font(.title2.bold())
+                                    
+                                    Spacer()
+                                    
+                                    CustomSecondaryButton(
+                                        action: {
+                                            isUpdateMode = false
+                                        },
+                                        destination: EmptyView(),
+                                        isCanNavigate: false
+                                    ) {
+                                        Image(systemName: "xmark")
+                                            .font(.title3)
+                                            .foregroundStyle(.red)
+                                    }
+                                }
                                 
-                                Spacer()
+                                // Name:
+                                TextFieldWithLabelView(
+                                    labelTitle: "Name",
+                                    icon: "person",
+                                    placeholder: "Your name",
+                                    isDisable: false,
+                                    text: $name
+                                )
                                 
-                                CustomSecondaryButton(
+                                // Interest:
+                                SelectionFieldWithLabelView(
+                                    labelTitle: "Interest",
+                                    icon: "target",
+                                    text: $interest
+                                )
+                                
+                                // Vocabulary per week:
+                                VStack(alignment: .leading, spacing: 16) {
+                                    HStack {
+                                        Image(systemName: "book.closed")
+                                        Text("Vocabulary per week")
+                                    }
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    
+                                    NumberStepperView(
+                                        value: $vocabularyPerWeek,
+                                        range: 1...10
+                                    )
+                                }
+                                
+                                CustomPrimaryButton(
                                     action: {
+                                        viewModel.addUpdateUser(
+                                            name: name,
+                                            interest: interest,
+                                            vocabularyPerWeek: vocabularyPerWeek
+                                        )
                                         isUpdateMode = false
                                     },
                                     destination: EmptyView(),
-                                    isCanNavigate: false
+                                    isCanNavigate: false,
                                 ) {
-                                    Image(systemName: "xmark")
-                                        .font(.title3)
-                                        .foregroundStyle(.red)
+                                    Text("Save Changes")
+                                        .font(.headline)
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
                                 }
-                            }
-                            
-                            // Name:
-                            TextFieldWithLabelView(
-                                labelTitle: "Name",
-                                icon: "person",
-                                placeholder: "Your name",
-                                isDisable: false,
-                                bindedData: $name
-                            )
-                            
-                            // Interest:
-                            SelectionFieldWithLabelView(
-                                labelTitle: "Interest",
-                                icon: "target",
-                                bindedData: $interest
-                            )
-                            
-                            // Vocabulary per week:
-                            VStack(alignment: .leading, spacing: 16) {
-                                HStack {
-                                    Image(systemName: "book.closed")
-                                    Text("Vocabulary per week")
-                                }
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
+                                .padding(.top)
                                 
-                                NumberStepperView(
-                                    value: $vocabularyPerWeek,
-                                    range: 1...10
-                                )
+                                Spacer()
                             }
-                            
-                            CustomPrimaryButton(
-                                action: {
-                                    viewModel.addUpdateUser(
-                                        name: name,
-                                        interest: interest,
-                                        vocabularyPerWeek: vocabularyPerWeek
-                                    )
-                                    isUpdateMode = false
-                                },
-                                destination: EmptyView(),
-                                isCanNavigate: false,
-                            ) {
-                                Text("Save Changes")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                            }
-                            .padding(.top)
-                            
-                            Spacer()
                         }
                         .padding(28)
                         .presentationDetents([.large])
@@ -153,9 +157,42 @@ struct ProfileView: View {
                 .foregroundStyle(.secondary)
                 .padding(.bottom, 16)
                 
+                Toggle(isOn: $isNotificationEnabled) {
+                    HStack(alignment: .top) {
+                        Image(systemName: "bell")
+                            .font(.title3)
+                        
+                        VStack(alignment: .leading) {
+                            Text("Daily Reminder")
+                                .font(.headline)
+                            
+                            Text("Provide weekly vocabulary learned progression notification every day")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .onChange(of: isNotificationEnabled) { _, newValue in
+                    if newValue {
+                        // Check permission before scheduling notification
+                        NotificationManager.shared.checkNotificationPermission { isGranted in
+                            if isGranted {
+                                viewModel.checkWeeklyProgressAndNotify()
+                            } else {
+                                isShowNotificationDenied = true
+                            }
+                        }
+                    } else {
+                        isNotificationEnabled = false
+                        NotificationManager.shared.cancelNotification()
+                    }
+                }
+                .padding()
+                .toggleStyle(SwitchToggleStyle(tint: .green))
+                
                 CustomSecondaryButton(
                     action: {
-                        isShowAlert = true
+                        isShowDeleteAlert = true
                     },
                     destination: EmptyView(),
                     isCanNavigate: false,
@@ -169,7 +206,7 @@ struct ProfileView: View {
                     .foregroundStyle(.red)
                     .padding(8)
                 }
-                .alert("Are you sure to permanently delete this account?", isPresented: $isShowAlert) {
+                .alert("Are you sure to permanently delete this account?", isPresented: $isShowDeleteAlert) {
                     Button("Delete", role: .destructive) {
                         viewModel.deleteUser()
                         hasOnboarded = false
@@ -181,10 +218,20 @@ struct ProfileView: View {
             .navigationTitle("Personal Profile")
             .navigationBarTitleDisplayMode(.inline)
             .padding(.horizontal)
-            .alert("Data must not be empty!", isPresented: $viewModel.showAlert) {
+            .alert("Data must not be empty!", isPresented: $viewModel.showError) {
                 Button("Ok", role: .cancel) {
-                    viewModel.showAlert = false
+                    viewModel.showError = false
                 }
+            }
+            .alert(isPresented: $isShowNotificationDenied) {
+                Alert(
+                    title: Text("Permission Denied"),
+                    message: Text("Notification access is required. Please enable it in settings."),
+                    dismissButton: .default(Text("Got it")) {
+                        isShowNotificationDenied = false
+                        isNotificationEnabled = false
+                    }
+                )
             }
         }
     }

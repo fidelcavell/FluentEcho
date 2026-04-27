@@ -80,14 +80,15 @@ struct MissionItemCardView: View {
                     context: context,
                     selectedVocabulary: selectedVocabulary
                 ),
-                isCanNavigate: true) {
-                    HStack {
-                        Image(systemName: "graduationcap")
-                        Text("Learn Now")
-                            .fontWeight(.semibold)
-                    }
-                    .padding(8)
+                isCanNavigate: true
+            ) {
+                HStack {
+                    Image(systemName: "graduationcap")
+                    Text("Learn Now")
+                        .fontWeight(.semibold)
                 }
+                .padding(8)
+            }
             
             Spacer()
         }

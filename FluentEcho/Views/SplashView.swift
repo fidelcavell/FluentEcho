@@ -48,7 +48,7 @@ struct SplashView: View {
             }
             
             // Navigate after Delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 withAnimation {
                     isActive = true
                 }

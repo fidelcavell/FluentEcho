@@ -12,14 +12,14 @@ struct RecordingPracticeView: View {
     @StateObject private var speaker = SpeechManager()
     
     @State private var viewModel: VocabularyLearnViewModel
+    @State private var showPermissionAlert: Bool = false
+    
     var selectedPractice: SelectedPracticeData
     
     init(context: ModelContext, selectedPractice: SelectedPracticeData) {
         _viewModel = State(initialValue: VocabularyLearnViewModel(context: context))
         self.selectedPractice = selectedPractice
     }
-    
-    @State private var showPermissionAlert: Bool = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -51,10 +51,11 @@ struct RecordingPracticeView: View {
                 
                 CustomSecondaryButton(
                     action: {
-                        speaker.speak(targetedText: selectedPractice.selectedVocabulary.practiceSentencesEN[selectedPractice.index])
+                        speaker.isSpeaking ? speaker.stop() : speaker.speak(targetedText: selectedPractice.selectedVocabulary.practiceSentencesEN[selectedPractice.index])
                     },
                     destination: EmptyView(),
-                    isCanNavigate: false
+                    isCanNavigate: false,
+                    tint: speaker.isSpeaking ? .red : .green
                 ) {
                     Image(systemName: "speaker.wave.2")
                         .font(.title2)
@@ -86,23 +87,12 @@ struct RecordingPracticeView: View {
                 }
                 .foregroundStyle(.secondary)
                 
+                // TODO - TELITI INI, KENAPA PAKE AUDIO DARISINI BISA SEDANGKAN LANGSUNG CALL DI
+                // PREVIEWCARD MALAH TIDAK BISA
                 RecordedPreviewCardView(
-                    playbackPreview: {
-                        viewModel.playPreviewRecording()
-                    },
-                    savePreview: {
-                        viewModel.saveRecordingPractice(
-                            targetedIndex: selectedPractice.index,
-                            targetedVocabulary: selectedPractice.selectedVocabulary
-                        )
-                        viewModel.recordedAudioURL = nil
-                    },
-                    discardPreview: {
-                        if let url = viewModel.recordedAudioURL {
-                            try? FileManager.default.removeItem(at: url)
-                        }
-                        viewModel.recordedAudioURL = nil
-                    }
+                    audio: viewModel.audio,
+                    viewModel: viewModel,
+                    selectedPractice: selectedPractice
                 )
             } else {
                 HStack {
@@ -124,7 +114,7 @@ struct RecordingPracticeView: View {
                     Alert(
                         title: Text("Permission Denied"),
                         message: Text("Microphone access is required to record your voice. Please enable it in settings."),
-                        dismissButton: .default(Text("Ok")) {
+                        dismissButton: .default(Text("Got it")) {
                             // Do Nothing
                         }
                     )

@@ -12,7 +12,7 @@ import SwiftData
 @Observable
 class VocabularyLearnViewModel {
     private var context: ModelContext
-    private var audioManager = AudioManager()
+    let audio = AudioManager()
     
     init(context: ModelContext) {
         self.context = context
@@ -83,7 +83,7 @@ class VocabularyLearnViewModel {
     }
     
     func startRecording() {
-        audioManager.requestMicrophonePermission { granted in
+        audio.requestMicrophonePermission { granted in
             DispatchQueue.main.async {
                 self.recordedAudioURL = nil
                 
@@ -94,7 +94,7 @@ class VocabularyLearnViewModel {
                     
                     guard let recordedURL = self.recordedAudioURL else { return }
                     
-                    self.audioManager.startRecording(url: recordedURL)
+                    self.audio.startRecording(url: recordedURL)
                     print("Microphone permission granted! [VIEWMODEL]")
                     
                 } else {
@@ -107,12 +107,12 @@ class VocabularyLearnViewModel {
     
     func playPreviewRecording() {
         guard let url = recordedAudioURL else { return }
-        audioManager.playback(url: url)
+        audio.playback(url: url)
     }
     
     func stopPreviewRecording() {
         self.isRecording = false
-        audioManager.stopRecording()
+        audio.stopRecording()
     }
     
     func saveRecordingPractice(targetedIndex: Int, targetedVocabulary: Vocabulary) {

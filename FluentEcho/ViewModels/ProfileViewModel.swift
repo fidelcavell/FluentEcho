@@ -12,6 +12,7 @@ import SwiftData
 @Observable
 class ProfileViewModel {
     private let context: ModelContext
+    private let notificationManager = NotificationManager.shared
     
     init(context: ModelContext) {
         self.context = context
@@ -20,7 +21,9 @@ class ProfileViewModel {
     
     var user: User?
     var isLoading: Bool = false
-    var showAlert: Bool = false
+    var showError: Bool = false
+    
+    var showSuccess: Bool = false
     
     func fetchUser() {
         isLoading = true
@@ -39,10 +42,12 @@ class ProfileViewModel {
     
     func addUpdateUser(name: String, interest: String, vocabularyPerWeek: Int) {
         isLoading = true
+        showError = false
+        showSuccess = false
         
         // Error Handling
-        if (name.isEmpty || interest.isEmpty) {
-            showAlert = true
+        if (name.isEmpty) {
+            showError = true
             isLoading = false
             return
         }
@@ -64,6 +69,7 @@ class ProfileViewModel {
         
         do {
             try context.save()
+            showSuccess = true
             print("ADD or UPDATE USER is performed!")
             
         } catch {
@@ -81,6 +87,7 @@ class ProfileViewModel {
         }
         
         do {
+            notificationManager.cancelNotification()
             try context.save()
             print("DELETE USER is performed!")
             
@@ -118,6 +125,17 @@ class ProfileViewModel {
             
         } catch {
             print("Failed to fetch vocabularies:", error)
+        }
+    }
+    
+    func checkWeeklyProgressAndNotify() {
+        if let existingUser = user {
+            notificationManager.checkProgressAndNotify(
+                weeklyGoal: existingUser.vocabularyPerWeek,
+                currentProgress: existingUser.currentLearnedVocabulary,
+                hour: 9,
+                minute: 0
+            )
         }
     }
 }
