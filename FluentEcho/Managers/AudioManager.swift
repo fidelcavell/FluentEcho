@@ -62,8 +62,6 @@ class AudioManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             isPlaying = true
             player?.play()
             
-            print(isPlaying ? "TRUE PLAY" : "FALSE PLAY")
-            
         } catch {
             print("Failed to playback audio:", error)
         }
@@ -72,12 +70,10 @@ class AudioManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func stopPlayback() {
         player?.stop()
         isPlaying = false
-        print("PLAY STOP")
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         // When the audio play finishes, set isPlaying to false
         isPlaying = false
-        print(isPlaying ? "TRUE PLAY DELEGATE" : "FALSE PLAY DELEGATE")
     }
 }

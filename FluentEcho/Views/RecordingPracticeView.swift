@@ -112,11 +112,16 @@ struct RecordingPracticeView: View {
                 }
                 .alert(isPresented: $showPermissionAlert) {
                     Alert(
-                        title: Text("Permission Denied"),
-                        message: Text("Microphone access is required to record your voice. Please enable it in settings."),
-                        dismissButton: .default(Text("Got it")) {
-                            // Do Nothing
-                        }
+                        title: Text("Allow microphone"),
+                        message: Text("You need to allow FluentEcho to access microphone in order to recording your practice voice."),
+                        primaryButton: .default(Text("Open Settings")) {
+                            guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                            
+                            if UIApplication.shared.canOpenURL(url) {
+                                UIApplication.shared.open(url)
+                            }
+                        },
+                        secondaryButton: .cancel()
                     )
                 }
                 .padding(.top, 52)

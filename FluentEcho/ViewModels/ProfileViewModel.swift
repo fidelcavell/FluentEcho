@@ -138,4 +138,26 @@ class ProfileViewModel {
             )
         }
     }
+    
+    func resetProgressIfNeeded() {
+        let calendar = Calendar.current
+        let today = Date()
+
+        if let existingUser = user {
+            if calendar.component(.weekday, from: today) == 2 {
+                if !calendar.isDate(existingUser.lastReset, inSameDayAs: today) {
+                    existingUser.currentLearnedVocabulary = 0
+                    existingUser.lastReset = today
+                }
+            }
+        }
+        
+        do {
+            try context.save()
+            print("RESET WEEKLY PROGRESSION is performed!")
+            
+        } catch {
+            print("Failed to reset weekly progression: ", error)
+        }
+    }
 }

@@ -37,7 +37,7 @@ class NotificationManager {
         dateComponents.minute = minute
         
         //let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 300, repeats: true)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
         let request = UNNotificationRequest(identifier: "dailyReminder", content: content, trigger: trigger)
         
         UNUserNotificationCenter.current().add(request) { error in
@@ -57,7 +57,7 @@ class NotificationManager {
     // Check user's current weekly progression and schedule notification if needed
     func checkProgressAndNotify(weeklyGoal: Int, currentProgress: Int, hour: Int, minute: Int) {
         if currentProgress < weeklyGoal {
-            scheduleDailyNotification(hour: hour, minute: minute, title: "Reminder", body: "You're behind your weekly goal! Let's back to continue progressing!")
+            scheduleDailyNotification(hour: hour, minute: minute, title: "Reminder", body: "You're behind your weekly goal of \(weeklyGoal) vocabularies! Let's back to continue your progressing!")
         } else {
             cancelNotification()
         }

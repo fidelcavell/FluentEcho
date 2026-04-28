@@ -19,21 +19,15 @@ struct MissionItemCardView: View {
         VStack(spacing: 16) {
             HStack {
                 Spacer()
-                CustomSecondaryButton(
-                    action: {
-                        viewModel.updateLearnedStatus(byId: selectedVocabulary.id)
-                    },
-                    destination: EmptyView(),
-                    isCanNavigate: false
-                ) {
-                    HStack {
-                        Image(systemName: selectedVocabulary.isCompleted ? "checkmark.circle" : "xmark.circle")
-                        Text(selectedVocabulary.isCompleted ? "Completed" : "Incomplete")
-                            .fontWeight(.semibold)
-                    }
-                    .font(.caption)
-                    .foregroundStyle(selectedVocabulary.isCompleted ? .green : .red)
-                }
+                
+                Text(selectedVocabulary.isCompleted ? "Completed" : "Incomplete")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(selectedVocabulary.isCompleted ? .green : .red)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(selectedVocabulary.isCompleted ? .green.opacity(0.1) : .red.opacity(0.1))
+                        .clipShape(Capsule())
             }
             
             Text(selectedVocabulary.word)

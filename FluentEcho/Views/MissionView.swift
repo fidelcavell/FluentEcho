@@ -10,11 +10,14 @@ import SwiftData
 
 struct MissionView: View {
     @Environment(\.modelContext) private var context: ModelContext
+    
     @State private var viewModel: MissionViewModel
+    @State private var profileVM: ProfileViewModel
     @State private var currentIndex: Int = 0
     
     init(context: ModelContext) {
         _viewModel = State(initialValue: MissionViewModel(context: context))
+        _profileVM = State(initialValue: ProfileViewModel(context: context))
     }
     
     var body: some View {
@@ -58,6 +61,9 @@ struct MissionView: View {
                 if let interest = viewModel.user?.interest {
                     viewModel.fetchVocabularies(selectedTag: interest)
                 }
+                
+                // Reset weekly learned vocabulary progression on every monday
+                profileVM.resetProgressIfNeeded()
             }
             .onChange(of: viewModel.user?.interest) { oldValue, newValue in
                 // If the interest has changed, refetch vocabularies

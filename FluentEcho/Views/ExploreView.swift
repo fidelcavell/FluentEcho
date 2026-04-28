@@ -18,9 +18,11 @@ enum FilterExplore: String, CaseIterable, Identifiable {
 
 struct ExploreView: View {
     @State private var viewModel: ExploreViewModel
+    @State private var profileVM: ProfileViewModel
     
     init(context: ModelContext) {
         _viewModel = State(initialValue: ExploreViewModel(context: context))
+        _profileVM = State(initialValue: ProfileViewModel(context: context))
     }
     
     @State private var searchText: String = ""
@@ -54,6 +56,9 @@ struct ExploreView: View {
                 if let interest = viewModel.user?.interest {
                     viewModel.fetchVocabularies(selectedTag: interest, targetedFilter: "")
                 }
+                
+                // Reset weekly learned vocabulary progression on every monday
+                profileVM.resetProgressIfNeeded()
             }
             .onChange(of: searchText) { _, newValue in
                 viewModel.searchText = newValue

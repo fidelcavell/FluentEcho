@@ -14,11 +14,13 @@ class User {
     var interest: String
     var currentLearnedVocabulary: Int
     var vocabularyPerWeek: Int
+    var lastReset: Date
     
     init(name: String, interest: String, vocabularyPerWeek: Int) {
         self.name = name
         self.interest = interest
         self.currentLearnedVocabulary = 0
         self.vocabularyPerWeek = vocabularyPerWeek
+        self.lastReset = Date()
     }
 }

@@ -58,8 +58,10 @@ class VocabularyLearnViewModel {
             }
             
             if let existingUser = user {
-                existingUser.currentLearnedVocabulary += selectedVocabulary.isCompleted ? -1 : 1
-                selectedVocabulary.isCompleted = !selectedVocabulary.isCompleted
+                if (!selectedVocabulary.isCompleted) {
+                    existingUser.currentLearnedVocabulary += 1
+                    selectedVocabulary.isCompleted = true
+                }
                 try context.save()
                 
             } else {
@@ -125,10 +127,16 @@ class VocabularyLearnViewModel {
             vocabulary: targetedVocabulary
         )
         targetedVocabulary.learnHistory.append(newRecordingPractice)
+        
+        if !targetedVocabulary.isCompleted {
+            targetedVocabulary.isCompleted = true
+            user?.currentLearnedVocabulary += 1
+        }
         context.insert(newRecordingPractice)
         
         do {
             try context.save()
+            recordedAudioURL = nil
             print("SAVE LEARN HISTORY is performed!")
             
         } catch {

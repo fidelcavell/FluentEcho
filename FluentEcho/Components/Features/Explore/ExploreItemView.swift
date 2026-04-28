@@ -28,18 +28,16 @@ struct ExploreItemView: View {
                 
                 Spacer()
                 
-                HStack {
-                    Image(systemName: selectedVocabulary.isCompleted ? "checkmark.circle" : "xmark.circle")
-                    Text(selectedVocabulary.isCompleted ? "Completed" : "Incomplete")
+                if (selectedVocabulary.isCompleted) {
+                    Text("Completed")
+                        .font(.caption)
                         .fontWeight(.semibold)
+                        .foregroundStyle(.green)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(.green.opacity(0.1))
+                        .clipShape(Capsule())
                 }
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundStyle(.white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(selectedVocabulary.isCompleted ? Color.green : Color.red)
-                .clipShape(Capsule())
             }
         }
     }

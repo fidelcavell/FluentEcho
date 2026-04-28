@@ -129,6 +129,22 @@ struct VocabularyLearnView: View {
                     }
                 }
                 
+                HStack(alignment: .center) {
+                    Image(systemName: selectedVocabulary.isCompleted ? "checkmark.circle" : "xmark.circle")
+                    
+                    Text("This vocabulary lesson is \(selectedVocabulary.isCompleted ? "completed" : "incomplete")")
+                }
+                .foregroundStyle(selectedVocabulary.isCompleted ? .green : .red)
+                .font(.footnote)
+                .fontWeight(.semibold)
+                .padding(12)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(selectedVocabulary.isCompleted ? .green.opacity(0.2) : .red.opacity(0.2))
+                )
+                .padding(.top, 36)
+                
                 Spacer()
             }
             .ignoresSafeArea(edges: .bottom)

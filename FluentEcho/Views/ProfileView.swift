@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct ProfileView: View {
+    @Environment(\.scenePhase) private var scenePhase
+    
     @State private var viewModel: ProfileViewModel
     init(context: ModelContext) {
         _viewModel = State(initialValue: ProfileViewModel(context: context))
@@ -162,14 +164,8 @@ struct ProfileView: View {
                         Image(systemName: "bell")
                             .font(.title3)
                         
-                        VStack(alignment: .leading) {
-                            Text("Daily Reminder")
-                                .font(.headline)
-                            
-                            Text("Provide weekly vocabulary learned progression notification every day")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                        Text("Daily Reminder")
+                            .font(.headline)
                     }
                 }
                 .onChange(of: isNotificationEnabled) { _, newValue in
@@ -180,10 +176,12 @@ struct ProfileView: View {
                                 viewModel.checkWeeklyProgressAndNotify()
                             } else {
                                 isShowNotificationDenied = true
+                                isNotificationEnabled = false
                             }
                         }
                     } else {
                         isNotificationEnabled = false
+                        isShowNotificationDenied = true
                         NotificationManager.shared.cancelNotification()
                     }
                 }
@@ -225,13 +223,39 @@ struct ProfileView: View {
             }
             .alert(isPresented: $isShowNotificationDenied) {
                 Alert(
-                    title: Text("Permission Denied"),
-                    message: Text("Notification access is required. Please enable it in settings."),
-                    dismissButton: .default(Text("Got it")) {
+                    title: Text("Allow notifications"),
+                    message: Text("You need to allow FluentEcho to access notifications in order to use daily reminders."),
+                    primaryButton: .default(Text("Open Settings")) {
+                        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                        
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                        }
+                    },
+                    secondaryButton: .cancel() {
                         isShowNotificationDenied = false
                         isNotificationEnabled = false
                     }
                 )
+            }
+            .onAppear {
+                NotificationManager.shared.checkNotificationPermission { isGranted in
+                    DispatchQueue.main.async {
+                        isNotificationEnabled = isGranted
+                    }
+                }
+                
+                // Reset weekly learned vocabulary progression on every monday
+                viewModel.resetProgressIfNeeded()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    NotificationManager.shared.checkNotificationPermission { isGranted in
+                        DispatchQueue.main.async {
+                            isNotificationEnabled = isGranted
+                        }
+                    }
+                }
             }
         }
     }
